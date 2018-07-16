@@ -1,0 +1,711 @@
+Atelier PHP #5 - Samedi 18 Mai 2002
+ 'prof': veins [veins@skreel.org]
+
+
+[15:04] <veins> tu as fait les exos ?
+[15:05] <Jeanb> oué
+[15:05] <veins> ok  :)
+[15:05] <veins> tu me montres ?
+[15:06] <Jeanb> oki lol
+[15:06] <Jeanb> 1er exo
+
+	<?
+	   if (empty($_POST['login'] || empty($_POST['pass']) {
+	?>
+	<FORM action="<? echo $_SERVER['PHP_SELF']; ?>" method="POST">
+	<p>Login : <br><INPUT type="text" name="login"></p>
+	<p>Pass : <br><INPUT type="password" name="pass"></p>
+	<INPUT type="submit" value="Traiter">
+	</FORM>
+	<?
+	   }
+	   else
+	   {
+	     $fichier = fopen(".htmembres","r")or die("Le fichier ne peut pas s'ouvir");
+	     while($ligne= fgets($fichier,255) {
+	     $tableau = explode(':',$ligne);
+	     echo ($tableau[0]==$_POST['login'] ? ($tableau[1] == $_POST['pass'] ? "Bienvenue $tableau[2] $tableau[3]" : 'Mauvais mot de pass') : '');
+	     }
+	   }
+	?>
+
+[15:07] <veins> ok
+[15:07] <veins> deux petites remarques
+[15:07] <Jeanb> oui
+[15:07] <veins> la premiere c'est qu'il faut que tu essayes d'indenter au maximum
+[15:07] <veins> sur un petit script ca te sert pas a grand chose
+[15:07] <veins> mais plus ton script devient grand, plus tu trouveras simple a corriger
+		les petits bugs
+[15:08] <veins> la deuxieme, c'est qu'il ne faut jamais au grand jamais utiliser die()
+[15:08] <Jeanb> lol pk ?
+[15:08] <veins> parceque en general tu va mettre du html au dessus et en dessous
+[15:08] <veins> quand tu va faire ton die(), il va afficher l'erreur
+[15:08] <veins> mais pas le html qui va en dessous
+[15:08] <Jeanb> oki
+[15:08] <T0aD> il va arreter de charger la page quoi
+[15:08] <Jeanb> oué oué
+[15:09] <Jeanb> comme un exit;
+[15:09] <veins> le deuxieme exos tu as réussi aussi je suppose ?
+[15:09] <veins> ouais comme un exit
+[15:09] <Jeanb> oui
+[15:09] <veins> et le troisieme ?
+
+	$membres = file(".htmembres");
+	for($i=0 ; $i < count($membres);$i++)
+	  $membres[$i] = explode(':',$membres[$i]);
+	    if($membres[$i][0]==$_POST['login']) {
+	      if($tableau[$i][1] == $_POST['pass']){
+	        echo "Bienvenue $tableau[$i][2] $tableau[$i][3]"; break;}
+	      else
+	        echo "Mauvais pass";
+
+[15:09] <Jeanb> aussi
+
+	<FORM ACTION="" METHOD="POST">
+	<INPUT TYPE="hidden" NAME="addresse_ip" VALUE="127.0.0.1">
+	<INPUT TYPE="text" NAME="login" value="script">
+	<BR><INPUT TYPE="password" NAME="password" value="pourri">
+	<BR><INPUT TYPE="submit" VALUE="Envoyer !">
+	</FORM>
+
+[15:09] <veins> ok impec  :p
+[15:09] <veins> bien
+[15:10] <veins> vais quand meme faire une correction pour les logs et les autres  :)
+[15:10] <veins> on va donc commencer
+[15:10] <Jeanb> oki
+[15:10] <veins> aujourd'hui on va voir un truc assez compliqué et simple a la fois
+[15:10] <veins> les expressions régulières
+[15:10] <Jeanb> ah g horreur de ça lol, g jamais rien compris, il faut que ça chang
+[15:10] <veins> on va commencer par étudier les toutes simples et ca deviendra plus
+		complexe avec le temps  :)
+[15:10] <veins> bon
+[15:11] <T0aD>	Jeanb: c pas complique tu verras :)
+[15:11] <Jeanb> j'espère
+[15:11] <veins> On va commencer par corriger les exos:
+
+
+ Exo1.
+
+ Il s'agissait de creer un mini systeme d'authentification base sur un fichier
+ texte. Il y avait plusieurs solutions possibles, l'une d'entre elle est celle
+ qui suit:
+ On a un fichier texte '.htpassword' avec comme contenu:
+
+	veins:ceciestuntest
+
+ Le script suivant permettera a l'utilisateur veins (un gars bien sympa ;p) de
+ se "logguer".
+
+
+	<?
+	   if (!strlen($_POST['login']) || !strlen($_POST['password']))
+	   {
+	?>
+	<form action="<?=$_SERVER['PHP_SELF']?>" method="POST">
+	<input type="text" name="login" value="login"><br>
+	<input type="password" name="password" value="blablabla"><br>
+	<input type="submit" value="log in !">
+	</form>
+	<?
+	   }
+	   else
+	   { 
+	     $fd = fopen(".htpassword", "r");
+	     if (!$fd)
+	     { ?>Aucun fichier de mot de passe !<? }
+	     else
+	     {
+	       $in = 0;
+	       while ($ligne = fgets($fd, 1024))
+	       {
+	         $champs = explode(":", $ligne);
+	         if ( $champs[0]==$_POST['login']
+	           && $champs[1]==$_POST['password'] )
+	         {
+	           echo "Bienvenue, ".$_POST['login'];
+	           $in = 1;
+	         }
+	       }
+
+	       if (!$in) // $in==0
+	         echo "Mauvais login ou mauvais password !";
+	       fclose($fd);
+	     }
+	   }
+	?>
+
+
+ Comme d'hab, c'est pas la meilleure solution, c'est celle qui decompose toute
+ les etapes pour vous permettre de mieux comprendre le procede.
+
+ Explication:
+ Le premier 'if' nous permets de tester si les variables 'login' et 'password'
+ de la methode POST existent. Ce n'est pas la bonne maniere, mais comme vous
+ allez le voir aujourd'hui, on va pouvoir mieux controler tout ca  :)
+ Bref, on verifie leurs tailles en prenant le retour de strlen() comme une
+ valeur booleene (vous vous rappellez ? booleen ca veut dire que la reponse est
+ soit VRAI soit FAUX, 0 == FAUX, tout le reste == VRAI). Si une des deux n'est
+ pas existante, alors on affiche un formulaire.
+
+ La partie qui nous interesse est la suivante, dans le cas ou les variables sont
+ toutes les deux correctes. On ouvre le fichier en lecture (avec un message en
+ cas d'erreur), puis on le parcourt ligne par ligne, en 'explosant' les parties
+ delimitees par ':'. On obtient donc deux champs qui sont respectivement le
+ login et le mot de passe que l'on peut donc comparer avec nos variables, c'est
+ aussi bete que cela  :)
+
+ Vous noterez que j'ai utilise une variable $in que j'ai mise a 0 avant et qui
+ ne passe a 1 que si le login et pass est correct. En realite on aurait pu ne
+ pas utiliser cette variable en modifiant un peu le script, mais c'est pour vous
+ montrer un exemple d'utilisation pratique des variables. On peut s'en servir
+ pour "se rappeller" plus loin qu'une certaine chose a ete realisee.
+
+
+ Exo2.
+
+ La le script est sensiblement different. J'ai un peu la flemme de le retapper
+ en entier, donc je vais virer la partie ou on teste que les variables ont un
+ contenu et la partie qui genere le formulaire car c'est exactement la meme sur
+ les deux scripts. Prenons juste la partie qui nous interesse:
+
+
+	<?
+	   $users[0]['login'] = 'veins';
+	   $users[0]['password'] = 'test';
+	   $k = 0;
+	   for ($i = 0; $i < 10; $i++)
+	     if ( $users[$i]['login']==$_POST['login']
+	       && $users[$i]['password']==$_POST['password'] )
+	     {
+	       $k = 1;
+	       echo "Bienvenue, ".$_POST['login'];
+	     }
+
+	   if (!$k) // $k==0
+	     echo "Mauvais login ou password !";
+	?>
+
+ Bien, c'est pas plus complique. Cet exemple est vraiment pourri mais il
+ demontre comment ca marche. J'ai fixe une limite de 10 utilisateurs (dans
+ la boucle 'for', a l'aide de la fonction count() dont je n'ai pas parle la
+ derniere fois, il est possible de connaitre le nombre d'elements d'un tableau
+ et de faire en consequent:
+
+	for ($i = 0; $i < count($tableau); $i++)
+
+ On noteras que la aussi, j'ai utilise une variable $k pour savoir si a un
+ moment les login et password ont ete corrects. Pas besoin de debattre sur le
+ script il est super simple a comprendre, si vous avez des questions vous aurez
+ la possibilite de me les poser apres les corrections  ;)
+
+
+ Exo3.
+
+ Il fallait passer a traver la securite foireuse d'un script. L'exercice devait
+ demontrer que la securite ne doit pas etre faite au niveau de ce que l'on
+ espere que l'internaute fera (suivre notre formulaire) mais au niveau des tests
+ qui seront fait pour verifier que les informations sont correctes.
+ Il fallait tout simplement ecrire un formulaire en HTML avec un champs
+ 'adresse_ip' dont la valeur est '127.0.0.1' pour que le script reconnaisse que
+ vous etes bien qui vous pretendez etre. Simple non ?
+
+
+[15:16] <veins> Voila, si vous avez des questions c'est le moment  :)
+[15:17] <yariloo> nope
+[15:17] <veins> ok
+
+
+
+ Expressions regulieres simples
+  > http://www.php.net/manual/fr/ref.regex.php
+  > http://www.php.net/manual/fr/ref.pcre.php
+
+ Les expressions regulieres sont une sorte de langage qui permet de reduire en
+ une expression simple une multitude de mots. Ce langage permet par exemple de
+ remplacer tout l'alphabet par 'a-z' ce qui simplifie grandement nos tests.
+
+ En effet, on a vu tout a l'heure que pour tester si le login etait correct on se
+ contentait de verifier qu'il contenait au moins un caractere. C'est pas cool
+ parceque si on en met 2 et que nos logins doivent faire au minimum 8 lettres
+ il va le considerer comme 'bon' et passer a la suite des operations alors qu'on
+ aurait pu le rejeter directement. Vous allez me dire qu'on avait qu'a mettre un
+ autre test pour verifier qu'il contienne bien 8 caracteres mais a cela je vous
+ repondrais "et si le caractere est un signe # et que vous n'attendez que des
+ lettres ?" et la en theorie vous etes casses, vous commencez a sentir vos yeux
+ piquer et a haïr le php, skreel et ma personne  :)
+
+ Les expressions regulieres c'est TRES complexe et c'est pour ca que l'on ne va
+ voir que les bases pour l'instant et des expressions simples. Cela va nous
+ permettre de voir 4 fonctions interessantes qui vont vous suivre dans 90% des
+ scripts que vous ecrirez (le jour ou vous vous lacherez vraiment, vous en utiliserez
+ meme dans des simples compteurs :p).
+
+ une expression reguliere se decoupe en blocs:
+   [a-z] par exemple, represente l'ensemble des lettres de 'a' a 'z'.
+   [A-Z] en revanche represente les lettres mais en majuscule.
+   [0-9] par contre represente les chiffres.
+
+ On  peut les combiner:
+   [a-zA-Z0-9] represente les lettres minuscules, majuscules et les chiffres.
+
+ Ce qui est cool c'est que bien qu'il soit complexe d'ecrire des expressions
+ reguliere difficiles, il est simple d'en creer pour un usage courant.
+ On va voir plusieurs exemples qui vont vous faire comprendre comment ca marche:
+
+
+	<?
+	   if (ereg("[a-z]", $chaine))
+	     echo "la chaine contient un ou des caracteres minuscule.";
+	?>
+
+
+  int ereg ( string pattern, string string [, array regs] )
+  > http://www.php.net/manual/fr/function.ereg.php
+
+ la fonction ereg() peut prendre en arguments une expression reguliere et une chaine,
+ et renvoie une valeur booleene si la comparaison concorde. Pas besoin de nous
+ retapper l'exemple pour les majuscules et les chiffres, ca marche pareil  :)
+
+ Il y a des caracteres qui ont une importance dans les expressions, en voici
+ une petite liste:
+
+  le signe ^ par exemple designe le debut d'une chaine, et le signe $ en designe
+  la fin. Il y a des cas ou ils ont une autre signification mais on va voir ca plus tard.
+
+
+	<?
+	   if (ereg("^$", $chaine))
+	     echo "la chaine est vide !";
+	?>
+
+
+ Cet exemple demontre que l'expression ^$ indique une chaine vide (forcement, vu que
+ le debut est 'collé' a la fin sans aucun caractere entre les deux). Maintenant,
+ etudions des cas reels:
+
+	<?
+	   if (ereg("^[a-z]$", $chaine))
+	     echo "la chaine ne contient qu'une seule lettre";
+	?>
+
+ la lettre est minuscule au passage
+
+ [ correction (merci Guillaume) ]
+ Le caractere . represente 1 caractere indefini, ainsi "toto.toto" represente
+les chaines "totoatoto", "totobtoto"
+ Le caractere ? represente 0 ou 1 caractere indefini, ainsi l'expression "toto?toto"
+ represente aussi bien "totototo" que "totobtoto" ou encore "toto#toto"
+ le caractere * represente 0 ou x caracteres indefinis, ainsi "toto*toto" represente
+ "totototo", "totoatoto" ou "totoXYZtoto".
+
+
+ On peut faire un decoupage tres grossier des expressions pour former des mots:
+
+	<?
+	   if (ereg("^([a-z]{1})([A-Z]{1})$", $chaine))
+	     echo "la chaine commence par une minuscule, se termine
+		   par une majuscule et ne fait que deux caracteres";
+	?>
+
+ en fait on va voir le decoupage de plus pres:
+  ^		on a vu que c'est le debut de chaine
+  ([a-z]{1})	on a regroupe entre parenthese:
+		- l'expression [a-z]
+		- le nombre de fois ou elle se repete {1}
+  ([A-Z]{1})	pareil  :)
+
+ Vous voyez ? rien de bien complique. Maintenant, ce qui fait la puissance des
+ expressions regulieres, c'est qu'elles sont tres maniables. Par exemple, si on
+ veut que l'expression se repete entre 1 et 5 fois, on va mettre: {1,5}, mais
+ si on est pas sur du nombre de fois maximales on pourra mettre {1,}.
+
+ Prenons un exemple qui est TRES utilise sur Skreel. Votre login fait 8
+ caracteres au maximum, ne peut etre compose que de minuscules, de chiffres et
+ doit commencer par une minuscule.
+ On peut tres bien le faire sans les expressions regulieres en faisant une
+ boucle qui verifie le nombre de caractere, la position et le caractere à cette
+ position dans la chaine. C'est faisable, mais c'est "casse couille".
+ Avec les expressions regulieres:
+
+	<?
+	   if (ereg("^([a-z]{1})([a-z0-9]{0,7})$", $login))
+	     echo "login valide";
+	?>
+
+ On voit bien que l'expression reguliere attends un caractere minuscule pour
+ debuter, puis entre 0 et 7 caracteres minuscules ou chiffres.
+
+ On va terminer par un cas particulier qui peut vous etre utile et vous allez
+ pouvoir me poser vos questions.
+ Le signe ^ peut changer de sens dans certains cas. En fait, s'il se trouve
+ DANS une expression, il indique un contraire:
+   [a-z]   toutes les lettres minuscules et rien que ca
+   [^a-z]  tout les caracteres SAUF les lettres minuscules
+
+ Une utilisation par exemple est dans le test d'un mot de passe. On va tester
+ si le passe contient des lettres minuscules, des lettres majuscules, des
+ chiffres et un caractere qui ne soit ni une lettre majuscule, ni minuscule
+ et ni un chiffre. Cela donne:
+
+	<?
+	   if ( ereg("[a-z]", $pass) && ereg("[A-Z]", $pass)
+	     && ereg("[0-9]", $pass) && ereg("[^a-zA-Z0-9]", $pass) )
+	     echo "pass valide !";
+	?>
+
+
+ Les expressions regulieres ont cependant des limites, mais vous ne les sentirez
+ pas encore. Elles sont tellement puissantes qu'elles vous serviront sans doute
+ pour la plupart de vos scripts et c'est pour cela que je vous conseille de
+ faire votre possible pour maitriser au moins les bases tres vite.
+ On y reviendra de temps en temps...
+
+
+[15:23] <veins> Des questions ?
+[15:24] <lataverne> ca va pour ma part ...
+[15:24] <Jeanb> va un peu moins vite si possible mais sinon on va dire que ça va
+[15:24] <veins> ok
+[15:25] <yariloo> pareil que jeanb
+[15:25] <veins> si vous avez des questions hesitez pas, un des exos va en utiliser  :)
+[15:25] <Jeanb> ça va pour l'instant c déjà plus clair que tt ce que g lu
+
+
+ On va revenir a notre PHP.
+ Jusqu'a maintenant, vous aurez note que j'ai pas vraiment donné de fonctions à utiliser.
+ normal. En fait, il faut savoir un truc, si vous vous contentez betement d'utiliser des
+ fonctions ecrites par les autres vous vous limitez aux possibilites qui vous sont offertes
+ alors que vous pouvez les elargir.
+
+ Il y a deux cas en fait, le cas ou vous pouvez vous contenter de ce que l'on
+ vous offre (on veut calculer la taille d'une chaine, la fonction strlen() sait
+ le faire, vous perdriez du temps a reecrire cette fonction qui serait au final
+ plus lente car la "vraie" fonction fait partie du language, MAIS, quand vous
+ voulez une fonction particuliere, si vous vous contentez de faire betement appel
+ aux fonctions que l'on vous "donne" vous perdez du temps a essayer de bricoler
+ ce qui peut etre fait en peu de temps.
+ On va voir comment ecrire nos propres fonctions et comment en faire des librairies
+ que vous pourrez inclure dans d'autres scripts.
+
+ Quand vous avez besoin d'utiliser une fonction que vous ne pouvez pas ou ne
+ savez pas ecrire, faites appel au moteur de recherche de www.php.net, il se
+ fera un plaisir de vous donner toutes les informations  :)
+  > http://www.php.net/manual/fr/
+
+ A quoi ressemble une declaration de fonction en PHP:
+
+	Function ma_fonction($argument1, $argument2)
+	{ $total= $argument1 + $argument2;
+	  return ($total);
+	}
+
+ ou, pour les puristes :)
+
+	Function ma_fonction($argument1, $argument2)
+	{ return ($argument1 + $argument2); }
+
+
+ Vous placez ce code soit dans un script et il ne vous reste plus qu'a faire
+ un appel a la fonction comme cela:
+
+	$total = ma_fonction(1, 2);
+	echo $total;
+
+ qui affiche 3;
+ Soit vous en faite une librairie, c'est a dire, un fichier qui ne contient
+ que des declarations de fonctions. Apres quoi, vous faite une inclusion de
+ cette librairie dans tous les scripts qui ont à utiliser cette fonction.
+
+ Une inclusion se fait a l'aide de la fonction  require_once()
+  > http://www.php.net/manual/fr/function.require-once.php
+  > http://www.php.net/manual/fr/function.require.php
+
+ Son prototype est: void require_once(string);
+ String est le nom du fichier
+
+
+ L'avantage c'est que vous ne manipulez qu'un seul fichier au cas ou vous
+ avez des modifications a faire dans la fonction.
+
+
+ Comme dans les fonctions PHP standard, vos fonctions peuvent retourner une
+ valeur ou non, pour ma_fonction(), on a retourné un 'int' correspondant au
+ resultat de l'addition de argument1 et argument2.
+ On aurait pu renvoyer un char, une string, un array ou encore ne rien renvoyer
+ en n'utilisant pas l'instruction "return" par exemple
+ Mais, vous n'avez pas a specifier le type de ce que cela renvoie car PHP est
+ capable de le "detecter" tout seul.
+
+
+ Un exemple de fonction qui exploite les expressions regulieres, voici la
+ fonction qui valide vos logins sur Skreel:
+
+	Function isvalid_login($login)
+	{
+	  if (!ereg("^([a-z])([a-z0-9]{0,7})$", $login))
+	    return (0);
+	  else
+	    return (1);
+	}
+
+ Elle est placee dans une librairie, et chaque script qui en a besoin
+ (l'integralite des scripts de l'espace membre) inclue cette librairie pour
+ pouvoir faire appel a cette fonction.
+
+
+[15:30] <veins> des questieunes ?
+[15:31] <yariloo> ok , cé bon
+[15:31] <Jeanb> euh la différence entre require include require_once include_once
+[15:31] <veins> je l'attendais  :)
+[15:31] <Jeanb> lol
+[15:31] <veins> en fait
+[15:31] <lataverne> l'appel à la libraie se fait avant tt affichage, comme les
+		cookies, v ou pas ?
+[15:31] <Jeanb> moi je fou toujours include
+[15:31] <veins> include va inclure un fichier "tel quel"
+[15:31] <veins> require va l'interpreter
+[15:31] <veins> include_once ne va inclure qu'un fichier une seule fois
+[15:32] <veins> par exemple
+[15:32] <veins> votre script est le suivant:
+[15:32] <veins> <?
+[15:32] <veins>     include("toto");
+[15:32] <veins>     include("totobis");
+[15:32] <veins> ?>
+[15:32] <veins> imaginons que le fichier 'toto' inclue deja 'totobis'
+[15:32] <veins> il serait inclus deux fois dans le script
+[15:32] <Jeanb> oué et ta un grosse error dans les dents
+[15:33] <veins> les fonctions  include_once et require_once vont s'assurer que cela
+		ne se fera pas
+[15:33] <veins> d'ou une preference pour ces fonctions quand c'est possible
+[15:33] <veins> lataverne
+[15:33] <veins> les librairies s'incluent n'importe ou
+[15:33] <veins> avant il fallait les inclure avant le premier appel a la fonction
+[15:34] <veins> mais il me semble que depuis php4 tu n'as plus besoin et tu peux les
+		inclures au debut ou a la fin
+[15:34] <veins> mais par convention on inclus toujours les librairies au debut des scripts
+[15:34] <veins> pour que les autres developpeurs voient du premier coup d'oeils quels
+		fichiers sont necessaires a un script
+[15:34] <yariloo> je confirme, on peut appeler la fonction avant l'inclusion
+[15:34] <Jeanb> tu veux dire koi par là :
+[15:34] <Jeanb> include va inclure un fichier "tel quel"
+[15:34] <Jeanb> require va l'interpreter
+[15:35] <lataverne> oui, c'est preferable ... la fct avant son appel, je trouve pas
+		ça tres propre !
+[15:35] <veins> jean: imagineons que le fichier que tu veuille inclure contienne du php
+[15:35] <veins> include va l'inclure tel quel sans que l'interpreteur fasse son travail dessus
+[15:35] <veins> require va interpreter le fichier
+[15:36] <veins> en general, on utilise include pour inclure du html dans du php
+[15:36] <veins> et require pour inclure du php dans du php
+[15:36] <Jeanb> oki
+[15:36] <Jeanb> donc maintenant v toujours foutre des require_once
+[15:36] <yariloo> très important ça, ils le disent même pas dans le bouquin !!
+[15:36] <veins> en pratique j'ai toujours utilisé require() dans tout les cas sans
+		jamais avoir rencontré de problemes
+[15:36] <veins> enfin
+[15:36] <veins> require_once()
+[15:37] <veins> On va etudier un dernier truc pour cet atelier, et on va passer aux exos
+[15:37] <veins> j'aimerais que vous commenciez les exos pendant cet atelier pour une fois
+[15:37] <veins> pour etre sur de pouvoir repondre a vos questions en cas de probleme
+
+
+ On va terminer cet atelier en etudiant les sessions. Je vous filerais
+ les exos apres  ;)
+
+ Les sessions, c'est pratique, ca permets aux scripts de se rappeller d'un
+ internaute sans avoir a faire confiance a un cookie (vu que l'internaute peut
+ modifier ou effacer les cookies sur son ordinateur).
+ Une session cree un cookie sur le serveur et recupere les informations quand
+ c'est necessaire. On peut stocker des variables dans ce cookie ce qui nous
+ laisse un grand champ de possibilites.
+
+ On initialise la session a l'aide de la fonction  session_start()  qui va:
+  - creer une session si aucune n'est en cours
+  - recuperer les infos necessaire si une session est en cours
+
+ l'appel a cette fonction va egalement initialiser une constante (on verra ce
+ que sont les constantes la prochaine fois) qui va nous servir d'identifiant
+ de session. Il suffira de passer cette constante dans les liens pour que le
+ serveur se "rappelle" de l'internaute et le distingue d'un autre.
+
+
+ Pour utiliser des variables, on s'y prends comme pour les methodes GET et POST
+ grace aux tableaux. On va creer 3 scripts:
+
+
+	<? /* script 1 */
+	   session_start();
+	   $_SESSION['mavariable'] = 0;
+	?>
+	<a href="script2.php?<?=SID?>">script 2</a>
+	<?	?>
+
+
+	<? /* script 2 */
+	   session_start();
+	   echo $_SESSION['mavariable'];
+	   $_SESSION['mavariable']++;
+	?>
+	<a href="<?=$_SERVER['PHP_SELF']?>?<?=SID?>">script 2</a>
+	<a href="script3.php?<?=SID?>">script 3</a>
+	<?	?>
+
+
+	<? /* script 3 */
+	   session_start();
+	   session_unset();
+	   session_destroy();
+	?>
+
+
+ - Le script 1 cree une session et une variable de session a laquelle il
+  assigne la valeur 0.
+ - Le script 2 recupere les informations (la variable), il affiche la variable
+  et l'incremente apres quoi il se fait un lien a lui meme et vers le script 3.
+  Vous noterez la presence du <?= SID ?> qui est la constante contenant nos
+  infos de session.
+ - Le script 3 recupere les informations, detruit les variables de sessions et
+  detruit la session.
+
+
+ Normalement l'atelier se terminait la, mais comme je suis plus en avance que
+ je m'y attendais on va en profiter pour voir un truc niveau sécurité  :)
+ La constante (qui est une sorte de variable bien qu'elle n'en soit pas une)
+ contient une valeur qui est crée aléatoirement par le serveur pour l'internaute
+ elle est également unique ce qui évite que deux sessions se chevauchent;
+
+ le problème c'est que les sessions ne font pas de différence entre deux
+ internautes s'il ont la meme valeur de constante !
+ Pour éviter ce genre de problème on utilise en général plusieurs méthodes
+ pour s'assurer que personne ne "volera" la session d'un autre.
+
+
+ La première méthode, la plus bete, consiste à demander à tout vos "membres" de
+ cliquer sur le lien vers le script 3 quand ils ont finis c'est bete, mais c'est
+ important  :)
+ Bien sur, on ne _peut pas_ compter sur le fait que tout le monde le fasse, donc
+ PHP a implémenté ce qu'on appelle un timeout.
+
+ Il y a une duree maximale d'inactivité pour chaque session: si la session
+ reste inutilisée plus longtemps que cette durée, alors elle est detruite.
+ Sachant tout de meme que si l'internaute suit un lien, la duree "d'inactivité"
+ est remise à zero pour qu'il ne soit pas coupé de sa session en plein milieu.
+
+
+ Une autre méthode consiste à garder dans le cookie l'adresse IP de l'internaute
+ à chaque fois que le script est appellé, on compare la variable avec l'adresse IP
+ de l'internaute.
+ Si elle a changée c'est soit que quelqu'un a "piraté" la session, soit que
+ l'internaute a été déconnecté par son provider, s'est reconnecté et qu'il a
+ réactualisé le script avant que la période de timeout s'acheve.
+
+
+ Une troisieme méthode consiste à stocker dans des variables les login et password,
+ de verifier en permanence que celles ci sont bien correctes en les comparant à
+ celles d'une base de donnée et qu'elles n'ont pas changées en cours de session
+ (ca evite a l'internaute de changer sa variable de session a l'aide d'un script
+  sur le meme serveur et de se déclarer "admin" de votre site)
+
+
+ Enfin, la derniere methode est d'implementer vous meme un timeout plus 'court'
+ que celui de PHP
+
+
+[15:48] <veins> Des questions ?
+[15:49] <lataverne> comparaison IP + navigateur, c'est pas mieux comme methode ?
+		les salles reseau, ça existe ... ;o)
+[15:49] <Jeanb> si session.use_cookies est à on on a pas besoin de faire <?= SID ?>
+[15:49] <veins> lataverne, il y a plein de comparaisons à faire
+[15:49] <veins> chacun en fait en fonction de ce qu'il estime est sa sécurité
+[15:49] <veins> on ne peut pas réellement compter sur le navigateur
+[15:50] <veins> parceque chacun peut faire dire a son navigateur que c'est un autre
+[15:50] <veins> mais utiliser le navigateur + une autre méthode
+[15:50] <veins> c'est déjà un peu plus de sécurité
+[15:50] <yariloo> non
+[15:50] <veins> <Jeanb> si session.use_cookies est à on on a pas besoin de faire <?= SID ?>
+[15:50] <veins> le probleme avec use_cookies
+[15:50] <veins> c'est que la session depends encore une fois des cookies sur le client
+[15:51] <veins> si l'internaute a désactivé les cookies
+[15:51] <veins> la session devient aléatoire
+[15:51] <Jeanb> et ben il n'a k les réactivé
+[15:51] <veins> selon que la personne est mise <?= SID ?> ou pas
+[15:51] <veins> ouais
+[15:51] <veins> mais les cookies c'est pas bien
+[15:51] <veins> parceque encore une fois il faut toujours s'assurer que les choses
+		dont dépendent réellement tes scripts
+[15:51] <veins> se fassent du coté du serveur que tu connais
+[15:51] <toad>	Jeanb: : autant utiliser une methode sure et universelle
+[15:52] <veins> plutot que du coté des clients que tu ne connait pas
+[15:52] <lataverne> c pas si simple, certains ne savent pas comment remettre les
+		cookies sur un poste qu'ils n'ont pas configuré, ou alors c'est le
+		firewall qui les refuse, ou ...
+[15:52] <Jeanb> alors si on a les cookies à on et qu'on met <?= SID ?> si le client
+		accepte les cookies ça envoies les cokies et sinon ça envoie dans l'url ?
+[15:52] <veins> oui
+[15:52] <veins> si tu as les cookies a on et que tu utilises <?= SID ?> il marchera
+		bien ton script
+[15:52] <Jeanb> oki !
+[15:52] <veins> mais il enverra quand meme un cookie dans certains cas
+[15:53] <toad>	ca parait chaud de bruteforcer le numero de session ?
+[15:53] <veins> le numero de session est aleatoire
+[15:53] <veins> sous windows c'est plus facile a faire sauter
+[15:53] <veins> que sous unix
+[15:53] <toad>	le generé sous apache ?
+[15:53] <veins> non
+[15:53] <veins> il ouvre un device de random sous unix
+[15:53] <veins> et il lit un nombre de bits que tu configures dans php.ini
+[15:53] <veins> par exemple sur skreel
+[15:54] <veins> le numero de session est compose de 512 bits lus dans /dev/arandom
+[15:54] <veins> un device qui fournit un tres fort taux de chaos
+[15:54] <veins> mais on va éviter de parler de ca
+[15:54] <veins> c'est coté administration
+[15:54] <toad>	forcement, meme avec une connexion adsl ca parait tres chaud la
+[15:54] <veins> et pas développement  :)
+[15:54] <veins> le temps que tu cherches un numero de session
+[15:54] <veins> la session aurait deja fait un timeout
+[15:54] <toad>	on s en branle, jte pose la question la pour les autres :)
+[15:55] <veins> bref
+[15:55] <veins> il reste 5 minutes
+[15:55] <veins> donc je vais filer l'exo
+[15:55] <Jeanb> c pas comme le compteur de LoftStory où on peut piquer les n° en 2sec
+[15:55] <lataverne> mais sans bruteforcer, le risque est que kunkun "lise" la valeur
+		de la session dans l'url et refasse une requete avec, non ?
+		j'ai dit une connerie ?
+[15:55] <veins> non c'est pas une connerie
+[15:56] <veins> en fait
+[15:56] <veins> si tu est sur une machine ou d'autres on acces
+[15:56] <veins> il est IMPERATIF
+[15:56] <yariloo> cé quoi 'bruteforcer' ?
+[15:56] <veins> de cliquer sur le lien du 3eme script
+[15:56] <veins> yariloo: c'est tester toutes les possibilites
+[15:56] <yariloo> ok
+[15:56] <veins> genre: a, b, c, ..aa, ab, ac... aaa, aab
+[15:56] <veins> et ainsi de suite, jusqu'a tomber sur la bonne
+[15:56] <veins> bien
+
+
+
+ Exos:
+
+  1) faites un script utilisant ce que l'on a vu pour faire un mini espace
+     membre. On devra pouvoir s'authentifier, entrer dans une session et la
+     quitter. On verifieras les logins a l'aide d'expressions regulieres,
+     ces logins seront stockes dans un fichier texte et voila  :)
+  2) l'exo 1 devrait vous occuper une semaine  :)
+
+  Amusez vous bien.
+
+
+[15:57] <Jeanb> lol l'exo 2
+[15:57] <yariloo> j'ai pas une semaine à passer à ça moi !!
+[15:57] <yariloo> tant pis
+[15:57] <lataverne> ça tombe tres bien, j'ai ca à faire pour un pote justement !!! ;o)
+[15:58] <yariloo> j'essayerai quand même
+[15:58] <veins> yariloo: si tu as tout compris
+[15:58] <veins> ca devrait te prendre 1 heure à tout casser
+[15:58] <yariloo> ok, merci
+[15:58] <veins> et ca dépends a quel point tu veux le faire
+[15:58] <veins> genre bien détaillé
+[15:58] <veins> ou juste copie conforme à l'énoncé  :)
+[15:58] <yariloo> non genre moche
+[15:59] <lataverne> c le mieux ! ;o)
+[15:59] <yariloo> pas le tant et pas l'inspiration, pour l'instant :)
+[15:59] <veins> bien, si vous avez des questions hésitez pas à utiliser le forum ou irc  :)

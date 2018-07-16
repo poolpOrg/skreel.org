@@ -1,0 +1,338 @@
+Atelier UNIX #2 - Samedi 13 Avril 2002
+ 'prof': veins [veins@skreel.org]
+
+
+[16:09] <veins>	combien d'entre vous ont un Unix dispo à coté d'eux pendant les ateliers ?
+[16:10] <kirtap> pas moi
+[16:10] <Bob_>	moi non plus
+[16:10] <kirtap> ce apres-midi
+[16:10] <xo`|dodo> pas moa, c a 20 metre de moa
+[16:10] <xo`|dodo> et je peu pas ramené le pc a coté de moa
+[16:10] <hugaru> à 12 metres
+[16:10] <T0aD>	pareil
+[16:10] <T0aD>	mais en centimetres
+[16:10] <T0aD>	:)
+[16:10] <veins>	parceque a partir du prochain atelier ca va devenir indispensable
+[16:11] <xo`|dodo> arf bah j essayerai de le ramené a coté de moa
+[16:11] <veins>	je peux eventuellement creer un shell sur une machine ici
+[16:11] <veins>	mais si vous etes trop nombreux ca va pas etre cool du tout
+[16:11] <veins> bon
+[16:11] <veins>	vu que vous etes pas trop nombreux aujourd'hui
+[16:11] <veins>	on va gerer ca comme ca
+[16:12] <veins>	tout ceux qui sont reveilles m'envoient en privé un login
+[16:14] <veins>	vous allez devoir télécharger un client 'ssh' c'est tout petit
+		meme les modems 56k peuvent le faire
+[16:14] <veins>	http://www.chiark.greenend.org.uk/~sgtatham/putty/latest/x86/putty.exe
+[16:17] <veins>	deux petites secondes le temps de vous authoriser
+[16:19] <veins>	pour ceux qui utilisent putty
+[16:19] <veins>	terminal -> keyboard
+[16:19] <veins>	cochez 'linux'
+[16:20] <veins>	et cochez 'altgt acts as COmpose key'
+[16:20] <veins>	puis dans le menu de base vous saisissez:
+	'ssh.skreel.org' port '2222'  protocole 'ssh'
+
+[16:32] <hugaru> c'est bon
+[16:32] <veins>	bravo  :)
+[16:32] <T0aD>	nickel :)
+[16:32] <T0aD>	et d'un :)
+[16:32] <T0aD>	lol
+[16:33] <T0aD>	Bob_: tu veux un compte ?
+		message ton login a veins, il te passe le password en prive
+[16:33] <T0aD>	et depeche toi
+[16:33] <Bob_>	oki
+[16:34] <xo`|dodo> ok
+[16:36] <Bob_>	'k
+[16:36] <Bob_>	c bon
+[16:36] <Bob_>	<-dessus
+[16:38] <hugaru> ce que l'on obtient là c ets un shell perso ? ou commun ? 
+[16:38] <veins>	c'est un compte perso
+[16:38] <veins>	tu as ton login et ton pass
+[16:38] <veins>	pendant ce temps
+[16:39] <veins>	vous pouvez commencer par voir ou vous vous trouvez
+[16:39] <veins>	$ pwd
+[16:39] <T0aD>	vous pouvez prendre l atelier du cours unix n1 et le mettre en application
+[16:44] <xo`|dodo> c bon ca marche
+[16:44] <veins>	tu es loggué  :)
+[16:44] <veins>	bon
+[16:44] <veins>	on va commencer
+[16:44] <veins>	avant tout, k m'a fait noté que j'avais parlé trop rapidement de
+		la commande man
+[16:44] <veins> 'man' qui est l'abbréviation de manuel
+[16:45] <veins>	vous permets d'obtenir de l'aide sur les commandes
+[16:45] <veins>	tapez:
+[16:45] <veins>	$ man ls
+[16:45] <veins>	(il faut appuyer sur la touche 'q' pour quitter)
+[16:46] <veins>	le dollar n'est pas a tapper hein  :)
+[16:47] <hugaru> au fait touch c est different de > ? 
+[16:47] <veins> oui et non
+[16:47] <veins> disons que touch te permet de créer un fichier vide
+[16:47] <veins> le > te permets de le créer rempli si tu veux
+[16:47] <veins> mais touch a plusieurs utilités
+[16:47] <hugaru> ok 
+[16:47] <veins> bon
+
+
+ avec la commande 'man' vous pouvez donc obtenir de l'info sur un grand nombre de commandes
+ en bas de chaques pages man vous verrez des références à d'autres pages du manuel
+ elles ont en general la forme:
+
+   SEE ALSO:   commande(1)
+
+ ce qui qui veut dire que le manuel de telle commande est lisible en tappant:
+
+  $ man 1 commande
+
+ le chiffre correspond a un ordre de rangement
+ <k`> (le man est decoupe en plusieurs sections)
+
+ pour en savoir plus sur le man:  $ man man
+ <k`> et pour la recherche ds le man cher mr ?
+
+  $ man -k mot
+ ou encore:
+  $ apropos mot
+ qui va vous indiquer dans quelles pages du man on peut trouver le 'mot'
+ <k`> (vieille blague a la con: $ man woman)
+
+ Dans un premier temps on va voir en quoi l'arborescence est différente des systèmes
+ tels que windows; cela va nous permettre de comprendre un peu mieux le fonctionnement
+ de notre shell.
+ ensuite on verra comment améliorer notre environnement de travail et configurer
+ notre shell
+
+ vous savez tous vous déplacez a l'aide de la commande 'cd' comme on l'a vu la derniere fois
+ tapez:  $ cd /
+
+[16:52] <veins> dites moi quand vous etes tous prets
+[16:52] <hugaru> pret
+[16:52] <Bob_> vi vi c bon
+[16:52] <xo`|dodo> oui
+[16:53] <veins> ok
+
+ tapez: $ pwd
+ vous voyez '/'
+ la on se rends compte d'une chose: vous etes sur mon portable, il n'a qu'un seul
+ disque dur en remontant vous arrivez dans '/'
+ que ce serait il passé s'il y avait deux disques durs ?
+
+[16:54] <hugaru> rien 
+[16:54] <veins> et bien
+[16:54] <hugaru> rien du tou ? 
+[16:54] <veins> exactement
+
+ contrairement a windows, où on aurait eut le choix entre deux arborescence
+ sous Unix il n'y en a qu'une. Si l'on a un second disque dur il se trouvera
+ quelque part dans l'arborescence du premier.
+ Tout ca pour illustrer que le systeme fonctionne differement, meme sur des
+ points qui sont presques communs a tout les autres systemes.
+ C'est en partie pourquoi je vous ai dit d'oublier vos connaissances sous windows
+ la derniere fois
+
+ maintenant tapez:
+  $ mkdir mon_login
+ et dites moi ce que vous voyez
+
+[16:56] <hugaru> dans / ? 
+[16:56] <veins>	oui
+[16:56] <hugaru> :) mkdir: hugaru: Permission denied
+[16:56] <veins>	bien
+[16:56] <veins>	quelqu'un saurait me dire pourquoi ?
+[16:57] <hugaru> on n'a pas le droit d ecrire dans / ?
+[16:57] <veins>	bien
+[16:57] <veins>	c'est ce qu'on a vu la derniere fois au niveau des droits
+
+ en tapant ls -la
+ on s'appercoit que le repertoire est authorisé à tout le monde en lecture
+ et execution, mais pas en écriture
+
+ le répertoire '.' correspond toujours au répertoire courant
+ le répertoire '..' correspond toujours au répertoire précédent, le repertoire
+ parent, dans l'arborescence.
+ Dans le cas de / , les deux correspondent au repertoire courant
+
+ tapez:  $ ls
+
+[16:59] <hugaru> altroot boot    dev     home    root    stand   tmp     var
+[16:59] <hugaru> bin     bsd     etc     mnt     sbin    sys     usr
+
+ vous voyez pas mal de répertoires, il y en a un qui est particulier,
+ car vous avez tous le droit d'ecrire dedans: c'est /tmp
+ Il est "nettoyé" chaque soir à minuit, c'est un répertoire ou vous
+ pouvez tous écrire mais pas écrire dans les fichiers des autres
+
+[16:59] <veins>	walla
+[16:59] <veins>	on verra l'utilité de ce répertoire plus tard
+[17:00] <hugaru> ok 
+[17:00] <veins>	mais il va énormément vous servir
+[17:00] <veins>	revenez dans votre répertoire home
+[17:00] <veins>	$ cd
+[17:00] <hugaru> chez moi aussi c est nettoyé à minuit ? 
+[17:00] <veins>	hugaru: c'est nettoyé une fois par jour
+[17:01] <veins>	chez moi c'est minuit et au lancement de la machine,
+		chez toi ca peut différer selon ton OS.
+[17:01] <hugaru> ok
+[17:01] <hugaru> continuons
+
+
+ vous etes tous dans vos repertoires, créez un répertoire 'my_bin'
+ dans ce répertoire vous allez copier '/bin/ls' à l'aide de la commande 'cp'
+ mais vous allez le copier sous un autre nom
+
+  $ cd my_bin
+  $ pwd
+   /home/veins/my_bin
+  $ cp  /bin/ls  myls
+
+ vous devriez avoir un fichier 'myls' dans votre repertoire 'my_bin'
+ pour en savoir plus sur 'cp' vous pouvez consulter le manuel cp(1)
+
+[17:07] <veins> tout le monde a son petit 'myls' ?
+[17:07] <hugaru> oui
+[17:07] <hugaru> c ets bon 
+[17:08] <hugaru> c ets quoi ce fichier myls ? 
+[17:08] <veins> c'est une copie de 'ls'
+[17:09] <k`>	(l'executable 'ls')
+[17:09] <veins> elle va nous servir a comprendre un truc super important  :)
+[17:09] <hugaru> dac
+
+ revenez tous dans votre repertoire home
+  $ cd
+ et tapez:
+  $ myls
+
+[17:10] <veins>	qu'est ce qui arrive ?
+[17:10] <hugaru> sh: myls: not found
+[17:10] <veins>	maintenant tapez:
+[17:10] <veins>	$ ls
+[17:10] <veins>	plus d'erreur
+[17:10] <veins>	quelqu'un sait ce qui se passe ?
+[17:11] <hugaru> non 
+
+ en fait le shell utilise ce que l'on appelle des variables d'environnement
+ ce sont des variables qui sont fournies au lancement
+ avec des valeurs que le shell utilise pour ses operations
+ par exemple:
+
+ vous avez la variable d'environnement $USER, en faisant:
+  $ echo $USER
+   veins
+ vous voyez votre login
+
+  $ echo $HOME
+   /home/veins
+
+ il y en a plein, on en a pas besoin de suite, on les verras plus tard
+ celle qui nous interesse s'appelle $PATH
+
+  $ echo $PATH
+[17:14] <xo`|dodo> /home/boubou/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/games:.
+[17:14] <hugaru> /home/hugaru/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/games:.
+
+ c'est une liste de répertoires dans lesquels le shell va chercher la
+ commande que vous tapez; quand vous tappez: ls
+ le shell va voir si 'ls' existe dans /home/boubou/bin , puis dans /bin , etc...
+ jusqu'a trouver le bon répertoire
+
+ S'il ne trouve pas, vous prenez un 'command not found'
+
+ dans le cas de 'ls' , il se trouve dans /bin
+ mais dans le cas de votre 'myls', il ne se trouve dans aucun des répertoires du dessus
+
+[17:16] <hugaru> ben non 
+[17:16] <veins>	donc vous vous prenez une erreur  :)
+[17:16] <hugaru> il faut mettre le lieu ou il ets dans le path alors ? 
+[17:16] <veins>	walla
+[17:16] <veins>	tout le monde a bien compris ?
+[17:16] <hugaru> $ myls
+[17:16] <hugaru> sh: myls: not found
+
+ pour changer PATH et rajouter le repertoire my_bin, on va faire:
+   $ export PATH=$PATH:/home/monlogin/my_bin
+ <k`> (remplacez 'monlogin')
+
+[17:19] <hugaru> $ export  PATH=$PATH:/home/hugaru/my_bin
+[17:19] <hugaru> $ echo $PATH
+[17:19] <hugaru> /home/hugaru/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/games:.:/home/hugaru/my_bin
+[17:19] <xo`|dodo> /home/boubou/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/games:.:/home/boubou/my_bin
+[17:19] <veins> tappez:
+[17:19] <veins> $ myls
+[17:19] <hugaru> $ myls
+[17:19] <hugaru> my_bin
+[17:19] <hugaru> $
+[17:19] <hugaru> voila ça marche
+[17:19] <xo`|dodo> boubou my_bin
+[17:19] <veins> bien
+
+ comme je l'ai dit, elles sont "écrites" lors du lancement du shell
+ ce qui signifie que lorsque vous vous déconnecterez, le changement ne
+ sera plus effectif.
+ pour pallier ca, les shells utilisent ce qu'on appelle des fichier de profile
+ ils contiennent une liste de commandes. par exemple:
+
+  $ cat .profile
+   echo "salut oh mon maitre !"
+  $
+
+ cette commande sera execute a chaque lancement de mon shell
+ on peut donc en deduire que si on veut que notre variable $PATH soit
+ reécrite a chaques fois, il n'y a qu'a ajouter 'export PATH=$PATH:/home/monlogin/my_bin'
+ dans notre fichier .profile
+
+[17:22] <hugaru> on le fait là ? 
+[17:22] <veins> on ne va pas encore etudier d'editeur de texte cette semaine
+[17:22] <veins> on verra ca la semaine prochaine car ils demandent au moins
+		une heure d'atelier
+[17:22] <hugaru> ok 
+
+ il faut savoir que certaines variables d'environnement ne doivent pas etre modifiees
+ en l'occurence:  $USER et $HOME , car cela engendrerait un problem de sécurité
+
+[17:24] <veins> vous avez des questions ?
+[17:25] <hugaru> export
+[17:26] <hugaru> ya pas de manuel 
+[17:26] <veins> hugaru:  export n'est pas une commande
+[17:26] <veins> il s'agit de ce que l'on appelle un 'builtin'
+[17:26] <veins> une commande intégrée au shell
+[17:26] <veins> son fonctionnement est simple
+[17:27] <veins> quand tu fait:
+[17:27] <veins> $ TOTO='valeur'
+[17:27] <veins> la variable $TOTO est accessible uniquement dans le processus
+		(programme) en cours
+[17:27] <veins> quand tu fait 'export $TOTO'
+[17:27] <veins> ca le rends accessible meme aux processus (programmes) qui en decoulent
+[17:28] <hugaru> d accord 
+
+ certaines variables d'environnement permettent de modifier le prompt
+ je vais vous donner une liste des variables d'environnement
+ certaines vous permetteront de rendre votre shell plus agréable
+ tapez: $ set
+ les seuls variables a ne pas modifier, sont:
+  COLUMNS, HOME, IFS, LINES, LOGNAME, TERM et USER
+
+[17:32] <hugaru> ps1 PS2 PS3 PS4 c est quoi ça ? 
+[17:32] <T0aD>	les differents prompts
+
+ PS1 est le prompt par defaut, de temps en temps le prompt peut changer
+ selon certaines conditions. Par exemple quand tu arrives au bout d'une ligne
+ ou que tu sautes une ligne au milieu d'une commande.
+
+[17:33] <T0aD> exemple: le prompt de nouvelle saisie $PS2
+[17:33] <T0aD> tappez 'cat << EOF' pour voir ;)
+[17:33] <T0aD> et finissez en tappant uniquement 'EOF' sur une ligne
+[17:33] <Bob_> ou ctrl+c
+[17:34] <veins> bon
+[17:34] <veins> je pense qu'on va conclure cet atelier
+
+ la semaine prochaine on verra l'editeur de texte 'vi' , on verra comment
+ utiliser des filtres, des redirections et en gros, comment faire avec peu
+ de choses, beaucoup de travail  :)
+
+[17:36] <hugaru> bon si on doit resumer cet atelier qu' a ton vu precisement aujourd 'hui 
+[17:36] <veins>	on a vu le filesystem
+[17:37] <veins>	les variables d'environnement et en particulier la variable PATH
+[17:37] <hugaru> voila 
+[17:37] <veins> la maniere dont le shell cherche les binaires
+[17:37] <veins> la prochaine fois on aura le temps de voir plus, mais la on a perdu bcp
+		de temps à créer les shells  ;)
+[17:37] <hugaru> bon ben c etait bien sympas vivement la semaine prochaine
+[17:38] <veins> a la semaine prochaine

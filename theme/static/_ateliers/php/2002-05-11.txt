@@ -1,0 +1,716 @@
+Atelier PHP #4 - Samedi 11 Mai 2002
+ 'prof': veins [veins@skreel.org]
+
+
+ Bien, apres deux semaines de vacances, voici le retour des ateliers.
+ Cette semaine, on va pas voir pleins de choses, mais on va voir des choses
+ qui vont plaire a certains je pense. Par contre, ca va demander une tres
+ grosse attention, et surtout n'hesitez pas a posez vos questions si vous ne
+ comprenez pas car les sujets vont etre deja plus durs que dans les trois
+ premiers ateliers.
+ On commence par les corrections des exos de la derniere fois  ;)
+
+
+ Correction de l'exo 1.
+ Le compteur de l'exo etait assez simple, il aurait pu etre ecrit en moins de
+ dix lignes mais pour faciliter la comprehension, la correction va le rendre
+ un peu plus grand pour decortiquer les etapes.
+
+	<?
+	   $fd = fopen("compteur.txt", "r");
+	   if (!fd)
+	   { ?>Erreur, le fichier n'a pas pu etre ouvert en lecture.<BR><? }
+	   else
+	   {
+	     $count = fgets($fd, 512);
+	     if ($count == "")
+	       $count = 0;
+	     echo $count;
+	     fclose($fd);
+	   }
+
+	   $fd = fopen("compteur.txt", "w");
+	   if (!fd)
+	   { ?>Erreur, le fichier n'a pas pu etre ouvert en ecriture.<BR><? }
+	   else
+	   {
+	     $count++;
+	     fputs($fd, $count);
+	     fclose($fd);
+	   }
+	 ?>
+
+ On va voir en vitesse quelques petites choses. Comme je l'ai dit il aurait pu
+ etre ecrit en moins de dix lignes, en effet, dans cette correction on accede
+ deux fois au fichier: une fois en lecture, une fois en ecriture. Il est tres
+ important d'eviter ce genre de choses en reel car cela ralenti le script et
+ ajoute une plus grosse charge au serveur qui doit acceder deux fois au disque
+ dur au lieu d'une. De plus, on aurait pu reduire la taille en reecrivant
+ certaines parties et c'est ce sur quoi va traiter une partie de l'atelier
+ d'aujourd'hui.
+ Vous verrez, vous allez comprendre assez vite aujourd'hui, car c'est SUPER simple
+ et ca va vous permettre de prendre de bonnes habitudes  :)
+
+
+[15:11] <veins> des questions ?
+[15:11] <yariloo> Non
+[15:12] <Jeanb> non plus
+[15:12] <veins> ok
+
+
+ Correction de l'exo.2:
+ Le second exo consistait en l'ecriture d'un tout petit script de chat pas trop
+ complexe. Le but etait de manipuler l'acces en lecture, en ecriture tout en
+ recuperant des donnees provenant d'un formulaire. Si vous avez ete pointilleux
+ vous auriez pu utiliser les variables d'environnement pour ajouter encore plus
+ d'infos, mais ce n'etait pas dans le sujet.
+
+	<?
+	   if ($_POST['phrase'] != "")
+	   {
+	     $fd = fopen("chat.txt", "a");
+	     if (!fd)
+	     { ?>Erreur, ecriture impossible !<BR><? }
+	     else
+	     {
+	       fputs($fd, $_POST['phrase']."<BR>\n");
+	       fclose($fd);
+	     }
+	   }
+
+	   $fd = fopen("chat.txt", "r");
+	   if (!fd)
+	   { ?>Erreur, lecture impossible !<BR><? }
+	   else
+	   {
+	     while ($ligne = fgets($fd, 85))
+	       echo $ligne;
+	     fclose($fd);
+	   }
+	 ?>
+	<FORM ACTION="<?=$_SERVER['PHP_SELF']?>" METHOD="POST">
+	    <INPUT TYPE="text" NAME="phrase" VALUE="" MAXLENGTH="80">
+	<BR><INPUT TYPE="submit" VALUE="Envoyer !">
+	</FORM>
+
+
+[15:13] <veins>	des questions ?
+[15:14] <Jeanb>	non plus
+[15:14] <Neothone> euh moi jvien juste d'arriver on pe m'expliké kest ce ke
+		vous êtes en train de faire ! ;-)
+[15:14] <yariloo> Toujours pas
+[15:14] <veins>	neothone: la correction des exos
+[15:14] <Neothone> de la semaine derniere ???
+[15:14] <veins>	d'il y a trois semaines
+[15:14] <veins>	il y a eut deux semaines de vacances pour moi
+[15:14] <veins>	bon
+[15:14] <Neothone> daccord alor jme tait et jattend la suite ! :o)
+[15:15] <veins>	vous noterez un truc quand meme
+[15:15] <veins>	while ($ligne = fgets($fd, 85))
+[15:15] <veins>	je demande a lire 85 caracteres
+[15:15] <veins>	alors que dans mon formulaire je mets un maximum de 80
+[15:15] <Mouch0ir> pkoi ?
+[15:15] <Jeanb>	oué je me disais aussi mai je crois savoi mais pas sur
+[15:15] <veins>	c'est parceque tout en haut, a chaque phrase recut, on a rajouté: "<BR>\n"
+[15:15] <veins>	fputs($fd, $_POST['phrase']."<BR>\n");
+[15:16] <veins>	ok ?
+[15:16] <Jeanb>	oui
+[15:16] <veins>	toujours pas de questions ?
+[15:16] <veins>	ok  :)
+
+
+ Comme je l'ai dit, on va voir comment reduire la taille du code. Ca va vous
+ permettre d'ecrire un code plus rapide, plus court et qui consomme moins de
+ memoire. On avait vu deja comment se presentait un prototype, pour faire un
+ rappel:   int	strlen(string);
+
+ on sait donc que l'argument est une string et que la fonction renvoit un int.
+ En general, les gens ont la facheuse habitude de faire ceci:
+
+	<?
+	   $size = strlen("toto");
+	   echo $size;
+	 ?>
+
+ pour afficher la taille de la chaine "toto". Qu'est ce qu'il se passe ici ?
+ Et bien, le script va demander au serveur de lui attribuer 4 octets en memoire
+ (c'est la taille d'un int) pour une variable, il va y stocker la taille et faire
+ afficher le contenu de la variable. Sur cet exemple, les consequences ne sont pas
+ graves, a vrai dire on s'en fout le script va s'executer super vite et rendre la
+ memoire. Mais maintenant, imaginez que tout vos scripts demandent de la memoire
+ inutilement au serveur et que vous soyez des centaines a executer de tels scripts,
+ et bien... 4 + 4 + 4 + 4 ... ca fait beaucoup au final.
+
+ Un autre desavantage est que sur de longs scripts, vous arrivez souvent a
+ depasser les mille lignes de code, quand on en est a ce stade, on aimerait tous
+ avoir moins de lignes pour trouver plus facilement ce qui ne va pas. Et en nous
+ economisant une centaine de lignes inutiles, on arrive a:
+  - trouver le probleme plus vite
+  - avoir un script plus propre
+  - avoir un script qui s'execute plus vite
+
+ Les deux lignes precedentes auraient pu etre remplacees par:
+	<? echo strlen("toto"); ?>
+
+ ce qui nous aurait economise la variable $size
+ A la fin de cet atelier, vous aurez plusieurs petites portions de code et votre
+ exo sera de les reduire au maximum sans que cela affecte le fonctionnement du
+ script en question. En fait, il ne faut ni tomber dans l'exces, parceque dans
+ certains cas il est plus rapide de stocker une valeur dans une variable, ni se
+ dire que de toutes facons, on est pas a une ligne pres. Le but de ces ateliers
+ est de vous apprendre a faire le code le plus propre possible au final  :)
+
+ Pour simplifier le code, la manipulation est simple. Il suffit de verifier ce
+ que prennent des fonctions en arguments et ce que renvoient d'autres fonctions.
+ Si une fonction renvoit quelque chose qui peut etre pris en argument par une
+ autre, alors on peut les imbriquer:
+    string	ecrit();
+    string	affiche(string);
+
+ peut donner:
+	<? echo affiche(ecrit()); ?>
+
+ Parceque 'ecrit' va renvoyer une chaine et que 'affiche' attends une chaine.
+ Pour notre compteur, on aurait donc pu simplifier beaucoup plus en faisant ce
+ qui suit:
+
+	if (($count = fgets($fd, 512)) == "")
+	  $count = 0;
+
+ au lieu de:
+	$count = fgets($fd, 512);
+	if ($count == "")
+	  $count = 0;
+
+ ou encore un peu plus loin:
+	fputs($fd, ++$count);
+
+ plutot que:
+	$count++;
+	fputs($fd, $count);
+
+
+ Il y a plusieurs manieres de simplifier, toutes valent la peine d'etre testees.
+ Il faut cependant savoir que simplifier n'est pas toujours la meilleure chose a
+ faire et vous allez apprendre au cours des ateliers quand simplifier et quand
+ eviter de simplifier selon les situations ou vous vous trouverez confrontes a
+ ce dilemne  :)
+
+
+[15:23] <veins>	questieunes ?
+[15:23] <yariloo> Non
+[15:23] <T0aD>	oui :)
+[15:23] <veins>	T0aD: pas toi
+[15:23] <yariloo> Toujours pas, c'est bien expliqué
+[15:23] <Mouch0ir> ++$count < ca v dire koi ?
+[15:23] <veins>	mouchoir:
+[15:23] <veins>	on avait vu que:
+[15:24] <veins>	$count++
+[15:24] <veins>	ca faisait la meme chose que:  $count = $count + 1;
+[15:24] <veins>	++$count;
+[15:24] <veins>	c'est exactement la meme chose
+[15:24] <veins>	la difference en fait
+[15:24] <veins>	c'est que:
+[15:24] <veins>	$toto = 1;
+[15:24] <veins>	echo $toto++;
+[15:24] <veins>	ca va afficher 1 et faire passer $toto a 2 APRES
+[15:25] <veins>	et que
+[15:25] <veins>	echo ++$toto;
+[15:25] <veins>	ca va faire passer $toto a 2 et l'afficher apres
+[15:25] <Mouch0ir> ah d'accord
+[15:25] <Jeanb>	sinon moi g une question/remarque
+[15:25] <veins>	oui
+[15:26] <Jeanb>	on m'a dit de ne pas utilise " qd il n'y avais pas de
+		variables à interpréter, c vrai ou pas vu que tu utilises "toto"
+[15:26] <veins> Jeanb: comment ca ?
+[15:27] <veins> oh, je crois comprendre  :)
+[15:27] <veins> nan t'en fait pas
+[15:27] <veins> a la fin de l'atelier j'expliquerais quand utiliser " et quand utiliser '
+[15:27] <Jeanb> on m'a dit que par exemple qd tu faisait echo "toto a $i chiens"
+		va remplacer $i par sa valeur or que avec ' non
+[15:27] <Jeanb>	oki
+[15:27] <veins>	d'autres questions ?
+[15:27] <T0aD>	Jeanb: les ' balancent la chaine exacte contenu, ca prendra moins de
+		temps cote parsing
+[15:28] <Mouch0ir> non
+[15:28] <veins>	ok
+[15:28] <Jeanb>	oki donc c optimisé
+[15:28] <yariloo> Non cé bon
+[15:28] <veins>	c'est pas optimisé, c'est pour une utilisation différente  :)
+[15:28] <Jeanb>	ah oki
+
+
+ Les tableaux et leur utilite.
+ Il est un type de variable dont j'ai parle il y a peu de temps et auquel vous
+ etes deja et allez etre confronte pendant un moment. Les tableaux.
+
+ Un tableau comme on avait vu, est un type de variable qui contient d'autres
+ variables. On accede aux differentes variables par leur "position" dans le
+ tableau.
+ On sait qu'une fonction renvoit un tableau lorsque son prototype indique 'array'.
+	array   explode(string, string)
+
+ La fonction explode est une fonction qui prends deux chaines en arguments.
+ Elle "explose" la chaine et rempli un tableau ou chaque element est une partie
+ de la chaine delimitee par l'autre chaine. Par exemple:
+
+	<? $array = explode(" ", "toto va a la plage"); ?>
+
+ Ici, array[0] sera egal a 'toto', array[1] sera egal a 'va' et ainsi de suite.
+ Les tableaux ont une grosse utilite et sont utilises tout les jours, quand vous
+ recuperez une variable depuis un formulaire, celle ci est stockee dans un
+ tableau, quand vous recuperez une variable d'environnement, idem.
+
+ Prenons un exemple simple et que vous pourrez appliquer tres vite :)
+ Imaginez que vous developpiez un script de forum, vous voulez garder trace des
+ utilisateurs en leur creant un compte, un mot de passe et un niveau de pouvoirs
+ sur le forum. On pourrait creer un fichier texte ou chaque ligne a la forme:
+   compte:mot de passe:niveau
+
+ Pour faire la verification, il suffit de parcourir le fichier, d'exploser
+ chaques lignes a l'aide du caractere ':'. Ainsi on a un tableau de trois
+ elements ou array[0] contient le compte, array[1] contient le mot de passe et
+ array[2] contient le niveau. Ainsi, a l'aide d'une seule variable, on en
+ dispose de plusieurs  :)
+ Pour ceux que ca interesse, et bien que cela semble evident, un tableau prends
+ en memoire la taille de tout ses elements.
+ Pour creer vos propres tableaux, vous n'avez pas a vous prendre trop la tete
+ car il suffit de faire une assignation:
+
+	<?
+	   $tableau[0] = "toto";
+	   $tableau[1] = "va";
+	 ?>
+
+ Aussi simple que ca  :)
+ Il existe aussi un autre type de tableaux qui a ete herite du Perl probablement
+ et qui s'appelle 'tableaux associatifs'. Dans ce type de tableaux, on n'utilise
+ plus des nombres pour l'index, mais des valeurs (des chaines de caracteres):
+
+	<?
+	   $tableau['objet'] = "voiture";
+	   $tableau['couleur'] = "noire";
+	 ?>
+
+ C'est plus pratique dans certains cas que de donner des nombres, par exemple:
+
+	<?
+	   $comptes['login'] = "toto";
+	   $comptes['passwd'] = "t0t0#RulZ";
+	   $comptes['droits'] = "all";
+	 ?>
+
+ On appelle ces index des 'clefs'
+ Mais en realite, quand vous voulez utiliser les tableaux associatifs, il est
+ beaucoup plus propre d'utiliser des tableaux a plusieurs dimensions.
+ Ne vous enfuyez pas, le nom cache en realite un aspect super pratique de nos
+ tableaux  :)
+
+ Dans l'exemple juste au dessus, si on veut rajouter un nouvel utilisateur, on
+ est bloque parcequ'on ne peux pas reutiliser les clefs 'login', 'passwd' et 'droits'
+ sans quoi on effacerait la valeur actuelle.
+ L'avantage d'utiliser plusieurs dimensions est d'avoir un tableau qui en gere
+ deux en parallele (deux ou plus ;p).
+
+	<?
+	   $comptes[0]['login'] = "toto";
+	   $comptes[1]['login'] = "titi";
+	 ?>
+
+ Comme vous pouvez le voir, il n'y a aucun probleme a melanger les index nombres et les
+ clefs car en realite, PHP converti tout en nombre sans que vous ayez a y reflechir  :)
+ Si vous avez deja utilise 'phpMyAdmin' et que vous l'avez configure, il est
+ tres friand des tableaux multidimensionnels.
+
+ Je ne rentrerais pas dans les details sur la maniere dont il gere les clefs, sachez
+ juste que deux clefs identiques dans une dimension pointent sur la meme variable, deux
+ clefs identiques dans deux dimensions peuvent pointer sur des variables differentes.
+ Les tableaux associatifs ne vous rappellent rien ? Vous etes surs ?
+ $_POST['variable'] est un tableau associatif, le tableau contient toutes les
+ variables de la methode POST et chaque clef est un nom de variable.
+
+
+[15:34] <veins>	si vous avez des questions, c'est le moment  :)
+[15:34] <Mouch0ir> nop
+[15:34] <veins>	vous avez tous compris ?
+[15:35] <yariloo> non
+[15:35] <yariloo> oui
+[15:35] <Jeanb>	oui
+[15:35] <Jeanb>	sinon
+[15:35] <veins>	je pensais que cette partie vous poserait un peu probleme  :)
+[15:35] <veins>	j'ai de bons élèves comme quoi  :)
+[15:35] <veins>	oui Jeanb ?
+[15:35] <yariloo> si on peut se reprèsenter les choses, ca va
+[15:35] <Jeanb>	si dans le fichier compte il i a un user toto:monpassavecun:kilestbo:all ?
+[15:36] <Jeanb>	si on a un : dans un compte il va te sortir 4 éléments non ?
+[15:36] <veins>	oui
+[15:36] <veins>	c'est a ton script de gérer ce genre de cas
+[15:36] <Jeanb>	oki
+[15:36] <veins>	en general, on va encrypter les mots de passes
+[15:36] <Jeanb>	oui
+[15:36] <veins>	donc on n'aura jamais ce caractere
+[15:36] <veins>	ou alors on va utiliser comme separateur, un caractere qui ne pourra
+		pas etre utilisé dans aucun des champs
+[15:36] <Jeanb>	oki
+[15:37] <veins>	bon
+[15:37] <veins>	on va maintenant voir un truc totalement différent
+[15:37] <veins>	et on termineras par une serie d'exos
+[15:37] <veins>	:p
+[15:37] <yariloo> go
+
+
+ Premiere approche de la securite.
+ Maintenant que l'on commence a manipuler des donnees provenant de l'internaute,
+ un petit cours de securite s'impose. Il y aura des suites au fur et a mesure
+ que l'on touche a des points critiques.
+ Avant tout, on va voir quelques termes pour remettre des choses en place.
+ Avant tout, qu'est ce qu'un hacker ?
+ Un hacker est un programmeur qui va passer son temps a ameliorer des programmes
+ dans le but de leur ajouter des fonctionnalites manquantes, d'ameliorer les
+ performances globales, etc...
+ Quand vous en etes a verifier combien de memoire prends votre script et que
+ vous l'ameliorez en consequence et surtout en permanence, vous etes en train de
+ faire ce que l'on appelle 'un hack'.
+ [ n.d.k`: et que vous n'avez surement pas de vie sociale; d'autres symptomes: vous
+   ne vous souciez pas de votre apparence (cheveux longs graisseux, barbe à poux...)
+   et vous vous nourissez principalement de cafe ]
+
+ Quelques hackers celebres:
+   Bill Gates (Microsoft), Theo De-Raadt (OpenBSD), Steve Jobs (Macintosh),
+   Linus Torvalds (Linux), les gens de Phrack, les gens de Cult of Dead Cow ou
+   encore les gens de lOpht (a ne pas confondre avec les gens du loft ;p).
+
+ [ n.d.k` : pourquoi Bill ? durant ses jeunes annees Bill s'est quand meme fendu,
+   en 2 mois, d'un BASIC sur l'Altair, 'from scratch'.
+   J'aurais ajouté à la liste John "Doom & Quake" Carmack ]
+
+ Un cracker est quelqu'un qui essaye de penetrer un serveur pour des raisons
+ diverses telles que l'argent, le pouvoir, la reconnaissance des autres ou bien
+ encore le "fun".
+ Je n'en connais qu'un de nom, Kevin Minick, et il est rare de les connaitre car
+ etant en permanence "recherches".
+ ils se font discrets. Votre site ne sera surement jamais la cible d'un cracker,
+ car ils n'en tireraient aucun avantage quel qu'il soit.
+ Mais Skreel pourrait etre la cible d'un cracker, car il tirerait reconnaissance
+ a avoir fait tomber plusieurs centaines de sites d'un coup.
+ 
+ La categorie qui doit "vous faire peur", c'est celle des script kiddies. Ce
+ sont en general des adolescents qui veulent devenir des crackers (le plus souvent
+ par reconnaissance ou par effet de mode). Ils n'ont pas les competences pour attaquer
+ un serveur comme Skreel, donc ils s'entrainent sur les sites heberges.
+
+[15:40] *** T0aD is now known as fozzy
+[15:40] <veins> mdr
+[15:40] <veins> :)
+
+ Quand nous mettons en place une securite sur Skreel qui est transparente pour
+ vous, c'est qu'il s'agit d'une protection contre un cracker. Quand on vous
+ installe une securite qui "change vos habitudes" (le choix des mots de passes
+ costauds, le choix d'un identifiant different du login) c'est contre les script
+ kiddies qu'on vous protege.
+
+ Bon, on va passer a la partie interessante, c'est a dire "comment ils s'y prennent"...
+ Beaucoup d'entre vous se contentent de faire des scripts qui marchent. A partir
+ du moment ou ca marche, il est pret a etre installe ou distribue. Il n'y a pas que
+ vous, beaucoups de boites font ca aussi avec comme defense:
+  "les chances que quelqu'un de mal intentionne nous trouve..."
+
+ La realite est toute autre, a partir du moment ou votre site est mis en place
+ sur le net, il est attaque. Soit par quelqu'un de mal intentionne, soit par
+ quelqu'un qui a fait quelque chose que vous n'aviez pas prevu, sans mauvaises
+ intentions des fois.
+
+ En fait, en PHP (comme dans les autres languages), le probleme vient presque
+ toujours des variables et de la maniere dont on les manipule. Pour faire tres
+ simple on va distinguer deux types de variables, les "sures" et les "pas sures"
+ ca fait peut etre simpliste mais ca marche comme ca.
+ Les variables sures, sont celles qui n'ont pas besoin de tests parceque:
+  a) on sait ce qu'elles contiennent ou peuvent contenir (variables locales)
+  b) on sait qu'elles ne peuvent pas etre modifiees par un internaute
+
+	<?
+	   /* on sait que $a sera toujours egal a "toto" */
+	   $a = "toto";
+
+	   /* on sait que PHP_SELF ne peut pas contenir
+	    * de donnees dangereuses pour notre script 
+	    * car un internaute ne peut pas y toucher
+	    */
+	   $b = $_SERVER['PHP_SELF'];
+	 ?>
+
+ Les variables pas sures, sont toutes les autres parceque:
+  a) on ne sait pas ce qu'elles contiennent, elles sont "variables"
+  b) on ne peut JAMAIS etre sur de leur provenance, quelqu'un peut
+    faire un formulaire qui pointe sur le script et lui envoyer des
+    donnees pour contourner notre formulaire
+  c) parcequ'elles ne font pas partie des variables sures  :)
+
+	<?
+	   /* meme si $a est locale, elle contient une variable
+	    * dont on ne connait ni le contenu ni la provenance
+	    */
+	   $a = $_POST['donnees'];
+	 ?>
+
+
+ Un premier exemple tout bete. Beaucoup de scripts avec des formulaires vont
+ faire un test avec un javascript pour s'assurer que les donnees du formulaires
+ sont correctes. L'attaquant desactive le javascript de son navigateur et passe
+ a travers les filets. Le premier conseil en securite pour le developpement web
+ est de ne JAMAIS reposer sur une technologie cote client. Le javascript peut
+ etre utilise comme un plus (c'est le cas de Skreel) mais jamais comme unique
+ verification. Il est tres simple de faire un formulaire pour ne pas utiliser
+ celui du site.
+
+ Un second exemple est de "s'attendre" a ce que l'internaute ait un comportement
+ normal. Par exemple, vous faites des liens, et le script affiche la page qu'il
+ recoit par lien.
+ ex:
+	page.php?page=index.php
+
+ si l'internaute curieux tapes:
+	page.php?page=.htpasswd
+
+ Il peut afficher le contenu des passes pour une aire restreinte.
+ 
+ Il faut TOUJOURS verifier ce que l'internaute a entre avant de faire quoi que
+ ce soit. Sur Skreel par exemple, quand vous accedez a l'espace membre, avant
+ de charger quoi que ce soit et de verifier si votre compte existe, on verifie
+ d'abord que les infos "aient l'air" d'etre correctes. Apres quoi on verifie si
+ elles le sont reellements.
+ Un troisieme et dernier exemple pour cette premiere approche de la securite en
+ developpement web est le manque de teste sur une variable. Certaines fonctions
+ qui manipulent des tableaux par exemple, n'effacent pas le contenu du tableau
+ avant d'ecrire dedans. Si le script kiddie reflechit, il peut arriver a prendre
+ un pouvoir complet de votre site sous certaines conditions.
+
+ Par exemple, votre script va ajouter 'ok' a un tableau pour dire que vous avez
+ ete authentifie si le script kiddie ajoute 'ok' et que votre script ajoute 'faux'
+ apres si la suite de votre script recupere le premier element du tableau il pensera
+ que la personne est authorisée alors que ce n'est pas le cas.
+
+ Ce genre de choses arrive plus souvent lorsque l'on utilise mysql; car les fonctions
+ ont la facheuse habitude de ne jamais ecraser le tableau il faut donc par consequent
+ effacer le tableau avant sa premiere utilisation.
+ On a vu tout a l'heure comment creer un tableau avec explode()
+ quand on fait:
+
+	<?
+	   $tableau = explode(" ", "toto va a la plage");
+	 ?>
+
+ bien que explode() va effacer le contenu du tableau
+ on aurait pu pour etre "sur" (lorsqu'on utiliser d'autres fonctions)
+ faire un appel a:  unset($tableau)  avant de l'utiliser
+
+ On ne va pas aller plus loin dans le sujet, mais la securite reviendra assez
+ souvent au cours des prochains ateliers.
+
+
+[15:48] <veins> si vous avez des questions...  :)
+[15:48] <Jeanb> no questions
+[15:48] <yariloo> no
+[15:48] <Mouch0ir> no
+[15:48] <Jeanb>	très interressant
+[15:48] <veins>	on va faire encore quelques exos ensemble pendant cet atelier
+[15:48] <veins>	et je vous donnerais trois exos pour la prochaine fois
+[15:48] <fozzy>	pkoi je faisais pas partie de la liste des hackers celebres ?
+[15:49] <Jeanb>	lol
+[15:49] <veins>	fozzy: je t'ai oublié désolé  :)
+[15:49] <fozzy>	bah pas grave :)
+
+
+[15:50] <veins> bon
+[15:51] <veins> bon on revient a l'atelier
+[15:51] <veins> il reste 10 minutes
+[15:51] <veins> je vais passer sur les optimisations
+[15:51] <veins> je pense que vous avez compris
+[15:51] <Jeanb> oui
+[15:51] <veins> et je vais donner directement les exos
+[15:51] <veins> Voila, c'est la fin de cet atelier, on va passer aux exos pour la prochaine
+[15:51] <veins> fois, vous allez voir, c'est pas complique et plutot chouette.
+
+
+ Exo 1:
+
+  Ecrire un script simple constitue d'un formulaire avec les champs 'login'
+  et 'password'. Quand un utilisateur entrera un login et un mot de passe
+  le script consultera un fichier texte et si le login est present, afficheras
+  les nom et prenom de la personne.
+
+  Astuce: le nom du fichier contenant les mots de passe debutera par '.ht' car
+          le serveur web empechera ainsi aux internautes de le telecharger.
+  Indice: explode()
+
+
+ Exo 2:
+
+  Ecrire un script semblable en tout points au precedent mais qui utiliseras
+  cette fois un tableau multidimensionnel.
+
+
+ Exo 3 (bonus):
+
+  Voici un script offrant une securite tres minable. Il recoit des donnes d'un
+  formulaire et verifie si vous etes authorise a acceder a une aire privee.
+  Votre objectif, si vous l'acceptez, est de casser la securite de ce script
+  pour que vous puissiez toujours acceder a ce script. Le login est 'script'
+  et le pass est 'pourri'. La securite a casser est le premier test du script.
+  Rassurez vous, c'est tres tres tres simple  :)
+
+	<?
+	   if ($_POST['addresse_ip'] != "127.0.0.1")
+	   { echo "Desole, l'acces est refuse au machines distantes !\n"; }
+	   else if ($_POST['login'] != "" && $_POST['passwd'] != "")
+	   {
+	     if ($_POST['login'] == "script" && $_POST['passwd'] == "pourri")
+	       echo "Ca marche !";
+	     else
+	       echo "Login ou Pass incorrect !";
+	   }
+	   else
+	   { ?>
+	<FORM ACTION="" METHOD="POST">
+	    <INPUT TYPE="hidden" NAME="addresse_ip" VALUE="<?=$_SERVER['REMOTE_ADDR']?>">
+	    <INPUT TYPE="text" NAME="login">
+	<BR><INPUT TYPE="password" NAME="password">
+	<BR><INPUT TYPE="submit" VALUE="Envoyer !">
+	</FORM>
+	<? } ?>
+
+
+[15:53] <veins>	des questions sur les exos ?
+[15:53] <yariloo> non
+[15:54] <Jeanb>	non
+[15:54] <veins>	ils reprennent ce qu'on a vu aujourd'hui
+[15:54] <veins>	et je pense que vous devriez pas en avoir pour plus d'une heure
+		a faire les 3  :)
+[15:54] <yariloo> POur le 3 y faut faire quoi en fait
+[15:54] <yariloo> ?
+[15:54] <veins>	yariloo
+[15:54] <veins>	faut mettre le script sur ton compte
+[15:55] <veins>	et te debrouiller pour le detourner afin d'avoir la phrase
+		'Ca marche !' qui s'affiche
+[15:55] <veins>	sans modifier ce script
+[15:55] <yariloo> ok 
+[15:55] <yariloo> sympa !!
+[15:55] <veins>	il va t'afficher un formulaire
+[15:55] <Jeanb>	on peut pas refaire un formulaire externe ?
+[15:55] <veins>	Jeanb: tu fais ce que tu veux
+[15:55] <veins>	du moment que tu modifies pas le script
+[15:55] <Jeanb>	ah oki
+[15:55] <veins>	:p
+[15:56] <veins>	Si vous avez des questions, hesitez pas a repasser sur le chan de temps en
+[15:56] <veins>	temps. Si vous avez pas de questions et que vous voulez aider, hesitez pas
+[15:56] <veins>	non plus a venir assez souvent sur le chan en dehors des ateliers pour aider
+[15:56] <veins>	ceux qui ont du mal. Voila  ;)
+
+
+ Dans le prochain atelier, on va voir un truc vachement utile qui s'appelle
+ 'les expressions regulieres'. On ne verra pas ca en entier, mais juste les
+ bases (il faut plus d'un atelier pour bien les maitriser). Ca va vous permettre
+ de verifier ce que contiennent des variables avant de les utiliser et donc de
+ faire des scripts plus fonctionnels et plus securises.
+ have fun !
+
+
+[15:57] <Jeanb>	on fait pas l'optimisation ?
+[15:57] <veins>	vous voulez ?
+[15:57] <Jeanb>	oué
+[15:57] <veins>	il reste 5 minutes  :p
+[15:57] <veins>	on va improviser des exos
+[15:57] <Jeanb>	lol
+[15:57] <yariloo> Bon pas bye alors
+[15:57] <veins>	<?
+[15:57] <veins>	   $tata = $_POST['toto'];
+[15:57] <veins>    echo $tata;
+[15:57] <veins>	?>
+[15:58] <Jeanb> <? echo $_POST['toto']; ?>
+[15:58] <yariloo> echo $_POST['toto'];
+[15:59] <Jeanb> :-))))))
+[15:59] <veins> <?
+[15:59] <veins>     $phrase = $_POST['phrase'];
+[15:59] <veins>     $taille = strlen($phrase);
+[15:59] <veins>     echo "la chaine \"$phrase\" fait $taille caracteres";
+[15:59] <veins> ?>
+[15:59] <yariloo> tu tape plus vite jeanb
+[16:00] <yariloo> echo "la chaine $_POST['phrase'] fait",strlen($phrase),"caractère";
+[16:00] <Jeanb> <? echo 'la chaine "'.$_POST['phrase'].'" fait '.strlen($_POST['phrase']).'caractères'; ?>
+[16:00] <veins> bien  :)
+[16:00] <veins> yairloo
+[16:00] <veins> c'est des points pas des virgules
+[16:01] <yariloo> pardon
+[16:01] <Jeanb> non ça marche les virgules
+[16:01] <veins> mais sinon c'est le principe
+[16:01] <yariloo> sinon cé juste
+[16:01] <yariloo> ?
+[16:01] <veins> ca marche avec des virgules ?
+[16:01] <veins> erf oui chuis bete
+[16:01] <Jeanb> echo accèpte plusieurs arguments
+[16:01] <yariloo> y me semblai justement
+[16:01] <veins> ouais
+[16:01] <yariloo> dans un livre...
+[16:01] <veins> c'est juste pas traite pareil
+[16:01] <veins> avec les virgules ils traite plusieurs arguments
+[16:01] <veins> avec le . il concatene
+[16:01] <T0aD> veins: pfff, lamah @ss...
+[16:01] <T0aD> :)
+[16:01] <Jeanb> oué
+[16:01] <veins> sniff
+[16:02] <veins> <?
+[16:02] <veins>     $erreur = "ca marche pas !";
+[16:02] <veins>     $fd = fopen("toto", "r");
+[16:02] <veins>     if (!$fd)
+[16:02] <veins>       { echo $erreur; }
+[16:02] <veins> ?>
+[16:02] <Jeanb> lol
+[16:03] <yariloo> <? if(!(fopen("toto","r"))) { echo "ca marche pas ! ";
+[16:03] <yariloo> ?>
+[16:03] <Jeanb> echo (fopen("toto","r") ? "" : "ca marche pas !);
+[16:03] <Jeanb> echo (fopen("toto","r") ? "" : "ca marche pas !");
+[16:03] <veins> ouais
+[16:03] <veins> et si on veut garder le descripteur de fichier ?
+[16:03] <yariloo> ca marche pas?
+[16:03] <yariloo> :)
+[16:03] <Jeanb> echo (!$fd=fopen("toto","r") ? "" : "ca marche pas !");
+[16:04] <Jeanb> koi que non la ça chie
+[16:04] <veins> parentheses
+[16:04] <veins> :p
+[16:04] <yariloo> comprend pas  le script de jeanb
+[16:04] <Jeanb> echo (!$fd=fopen("toto","r") ? "ca marche pas" : "");
+[16:04] <veins> yariloo:  en fait c'est simple
+[16:04] <veins> ca permets de faire tenir un 'if' sur une ligne
+[16:04] <yariloo> cé quoi la syntaxe exacte ?
+[16:04] <veins> si ce qui est entre parenthese est bon
+[16:05] <veins> euh
+[16:05] <Jeanb> (condition ? affiramation : négation)
+[16:05] <veins> toto = (condition) ? reussi : autre;
+[16:05] <yariloo> d'accord merci
+[16:06] <veins> bon sur ce, je fais ma pause glouglou avant l'atelier Unix  :)
+[16:06] <Jeanb> lol oki
+[16:06] <Jeanb> @tte
+[16:06] <veins> oh
+[16:06] <yariloo> ok
+[16:06] <veins> cependant
+[16:06] <yariloo> Bye bye
+[16:06] <veins> petit truc quand même
+[16:06] <yariloo> wat?
+[16:06] <Jeanb> oui
+[16:06] <veins> yariloo
+[16:06] <veins> quand tu as utilisé les virgules
+[16:06] <veins> il y a quand même une différence avec le point
+[16:06] <yariloo> laquelle
+[16:06] <veins> ca passait grace a echo
+[16:06] <veins> le . sert a coller deux phrases
+[16:07] <veins> $toto = "titi"."toto";
+[16:07] <veins> ca va "coller les deux chaines"
+[16:07] <yariloo> ok
+[16:07] <veins> bon je part a la recherche du jus de pomme perdu
+[16:07] <veins> et je vous dit a la semaine prochaine pour le prochain atelier php
+[16:07] <yariloo> a+
+[16:07] <Jeanb> lol,moi il est a coté
+[16:07] <yariloo> merci
+[16:08] <Jeanb> @tte et @++ yarillo
+[16:08] <yariloo> bye jeanb
+[16:08] <Jeanb> bye

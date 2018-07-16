@@ -1,0 +1,410 @@
+Atelier UNIX #1 - Samedi 6 Avril 2002
+ 'prof': veins [veins@skreel.org]
+
+
+[16:14] <veins>	j'expliques un sujet et pendant ce temps vous ne pouvez pas parler
+[16:14] <veins>	je fait des pauses de temps à autre pour que vous puissiez poser vos
+[16:14] <veins>	questions
+[16:14] <veins>	gardez vos questions en rapport avec le sujet
+[16:15] <veins>	l'atelier est enregistré et vous pourrez les relire après coup
+[16:15] <veins>	bon
+[16:15] <veins>	déjà, qui a manipulé un système de type Unix ?
+[16:16] <veins>	'linux, bsd, ou autre
+[16:16] <k`>	(ds autre y a qnx)
+[16:16] <k`>	(macos X a l'extreme limite)
+[16:16] <bubuche93> ici
+[16:16] <Jeanb>	linux mais qq heures pas plus
+[16:16] <veins>	ok
+[16:16] <Jeanb>	et Mac Os X g manipulé aussi
+[16:16] <Clad>	linux
+[16:16] <veins>	pour les autres, je suppose que soit vous êtes sous windows, soit sous macos
+[16:17] <veins>	ce que je vais expliquer, ce rapporte a un système BSD qui s'appelle OpenBSD
+[16:17] <veins>	c'est en grande partie appliquable sur linux
+[16:17] <veins>	et en tres grande partie applicable sur les autres BSD
+[16:18] <veins>	si vous ne savez pas ou trouver un tel système, voici quelques adresses:
+[16:18] <veins>	- www.OpenBSD.org
+[16:18] <veins>	- www.FreeBSD.org
+[16:18] <veins>	- www.NetBSD.org
+[16:18] <veins>	- www.linuxiso.org
+[16:18] <veins>	vous trouverez votre bonheur là dedans et si vous disposez d'un simple modem,
+[16:18] <veins> vous pouvez acheter un magazine linux
+[16:18] <veins> pour 30 francs vous aurez un CD avec un linux dessus
+[16:19] <veins> si vous préférez, vous pouvez nous passer commande
+[16:19] <veins> pour 20 francs on vous grave un unix et on vous l'envoie  :)
+[16:19] <veins> on va commencer, en supposant que vous avez déjà installé votre système
+
+
+ Je vais vous demander d'oublier que vous connaissez windows.
+ Vous n'avez plus aucunes connaissances et vous partez sur des bases nouvelles
+ Vous avez du entendre déjà que Unix est un système multi-utilisateurs, quelqu'un ne sait
+ pas ce que ca veut dire ?
+
+[16:21] <pollux68_> plusieurs utilisateurs peuvent utiliser la machine en meme temps
+[16:21] <veins>	pas exactement, mais presque
+[16:21] <pollux68_> utililsateurs differents aussi
+[16:21] <Jeanb>	chaque utilisateur a des droits spéciaux sur les fichiers
+[16:21] <Jeanb>	sur la config etc
+[16:21] <veins>	plusieurs utilisateurs différents peuvent utiliser la machine en même
+		temps avec des préférences différentes
+
+ Pour que ca tourne bien sans problème, il y a différents types d'utilisateurs chaque
+ utilisateur à le droit de faire certaines choses.
+ C'est ce qu'on appelle les permissions et que l'on va voir un peu plus tard, on va
+ s'interesser à un utilisateur en particulier:
+ le 'root' est le seul utilisateur à avoir tout les droits sur la machine
+ c'est un compte 'critique', car la moindre faute est irréparable dans certains cas,
+ vraiment catastrophiques dans d'autres
+
+ lorsque vous allumez votre ordinateur, apres un plus ou moins long démarrage, vous
+ allez avoir ce qu'on appelle un 'prompt'. Le prompt ca ressemble à ca:
+   'Login: '
+
+ A ce moment la vous tappez votre nom d'utilisateur (root ou autre), le systeme vous
+ demande votre mot de passe et ensuite vous etes 'loggué'
+ 'loggué' signifie que vous etes en mesure d'interagir avec le systeme, vous lui passez
+ vos commandes et il vous réponds.
+ vous passez vos commandes dans ce que l'on appelle un 'shell', et qui est un programme
+ qui fait l'interface entre vous et votre systeme (celui par defaut sur bsd est csh,
+ celui par défaut sous linux est bash)
+ votre shell est personnalisable de plusieurs manières que vous verrez plus tard dans
+ un premier temps, vous allez vous créer un compte qui ne soit pas root, pour éviter de
+ faire des bétises  :)
+
+ Mais avant cela, il faut comprendre ce qu'est une uid et un gid, et ce que ces choix
+ impliquent
+ - l'uid (user identification) est un numéro qui doit de préférence etre unique, et qui
+   va "etiquetter" tout vos fichiers afin que le système soit sur que personne ne
+   s'amusera à les manipuler sans votre autorisation
+ - le gid est un concept de groupe équivalent a l'uid : il étiquette un fichier de
+   manière a ce que les permissions puisse apparetenir à un groupe.
+
+ sous BSD l'uid minimum par défaut est '1000', le premier compte aura donc l'uid 1000
+ et ainsi de suite...
+
+ Pour créer votre compte, vous allez choisir un login.
+ il y a certaines règles, qui ne sont pas obligatoires, mais qui assurent une
+ compatibilité entre tout les systèmes unix.
+ un login, pour etre conforme, doit faire 8 caractères maximum, etre composé uniquement
+ de lettres minuscules et de chiffres, et commencer par une lettre minuscule
+   bob, bob365	sont de bons logins
+   3bob, bob_33	sont de mauvais logins
+
+ Vous créerez votre compte de la sorte:
+   useradd -c 'votre nom' -d /home/login -m login
+
+ Pas défaut, vous faites partie du groupe 'users' (utilisateurs).
+ * l'option -c va permettre de specifier une description pour votre compte, elle
+  n'influeras sur aucun choix
+ * l'option -d va permettre de specifier votre répertoire personnel
+ * l'option -m va créer ce répertoire si il n'existes pas
+
+ une fois que ce compte sera crée, vous lui attribuerez un mot de passe à l'aide de
+ la commande 'passwd login', et vous taperez 'exit' pour revenir au prompt.
+ il faudra maintenant vous logguer grace a votre login
+ c'est maintenant que nous allons réellement étudier unix ensembles, quand vous ne
+ serez plus root  :)
+
+
+[16:35] <veins> questions ?
+[16:36] <Jeanb> non c très clair
+[16:36] <veins> bien
+
+
+ on est donc maintenant tous loggués en tant que l'utilisateur qu'on a crée et on se
+ trouve devant notre shell. Ca ressemble à ca:
+
+	user veins loggued in.
+	$
+
+ on va d'abord voir quelques commandes de bases.
+
+ * la commande 'pwd' vous permets de voir ou vous vous trouvez sur le système
+  <pollux68_> pwd = Print Working Directory
+  si vous avez respecté l'exemple du dessus, en tappant 'pwd' vous verrez: /home/login
+
+	$ pwd
+	 /home/veins
+
+ Ce répertoire est votre répertoire personnel, vous pouvez y mettre vos fichiers; c'est
+ votre espace de travail en quelques sorte.
+
+ Si vous etes perdus sur le système, il existeras un moyen simple de revenir à ce
+ répertoire et vous ne serez donc jamais réellement perdu  :)
+
+ * la commande 'cd' vous permets de vous balader sur le système
+  <k`> cd = change directory
+  elle prend un ou aucun argument afin de savoir ou vous voulez aller
+
+	$ cd /
+	$ pwd
+	 /
+	$ cd /home/veins
+	$ pwd
+	 /home/veins
+
+ en saisissant uniquement 'cd', vous vous retrouvez dans votre répertoire perso,
+ quelque soit l'endroit ou vous l'avez saisi
+
+	$ cd /tmp
+	$ pwd
+	 /tmp
+	$ cd
+	$ pwd
+	 /home/veins
+
+ * la commande 'ls' vous permet de savoir quels fichiers et répertoires se trouvent
+  dans le répertoire courant (ls = list)
+  elle prend plusieurs arguments (la liste est longue mais on noteras ceux de base)
+
+	$ ls
+	 monfichier1 monfichier2 monfichier3
+
+ vous pouvez également lister des répertoire en mettant leur nom en argument
+
+	$ ls /tmp
+	 temp1 temp2 temp3
+
+ ou mettre des noms de fichiers aussi, mais ca n'afficheras que le nom du fichier :)
+ ls prends une option interessante, c'est l'option '-l' qui permet d'obtenir des
+ informations étendues sur les fichiers
+
+	$ ls -l
+	 total 8
+	 drwx---r-x   2 veins  admins   512 Dec 29 17:45 my_bin
+	 drwx---r-x  18 veins  admins  1024 Apr  5 08:08 my_web
+	 drwx---r-x   5 root   admins   512 Mar 24 11:42 to_analyze
+	 drwx---r-x   2 root   admins   512 Apr  1 18:56 work
+	$
+
+ Vous noterez que chaques lignes contiennent beaucoup plus d'information que quand
+ nous tapons uniquement 'ls'. Vous pouvez créer des répertoires à l'aide de la commande
+ 'mkdir' qui prends comme argument le nom du répertoire
+
+	$ mkdir toto
+	$ ls -l
+	 total 10
+	 drwx---r-x   2 veins  admins   512 Dec 29 17:45 my_bin
+	 drwx---r-x  18 veins  admins  1024 Apr  5 08:08 my_web
+	 drwx---r-x   5 root   admins   512 Mar 24 11:42 to_analyze
+	 drwx---r-x   2 veins  admins   512 Apr  6 16:46 toto
+	 drwx---r-x   2 root   admins   512 Apr  1 18:56 work
+	$
+
+ Ce qui est intriguant en fait, c'est le  drwx---r-x au debut de chaques lignes
+ c'est ce que l'on appelle les permissions.
+ <pollux68_> dans l'ordre, permissions du fichier, nombre de liens, proprietaire,
+	     groupe proprio, taille, date de modif, et nom
+
+ Comme on a vu tout à l'heure, les utilisateurs ont des permissions différentes
+ et leurs fichiers sont 'etiquettés'. Sous Unix il existe trois types de personnes
+ distinctes le propriétaire, c'est un 'login' a part entière.
+ Quand quelqu'un crée un fichier, il en devient le propriétaire.
+
+ le groupe, quand quelqu'un fait partie d'un groupe, il peut demander à ce que le
+ groupe ait accès a ses fichiers
+
+ et il y a les autres, ceux qui sont sur le système, qui ne sont pas propriétaires
+ d'un fichier et qui ne font pas partie du groupe
+
+ le drwx---r-x du début de ligne permet de savoir qui a le droit de faire quoi sur le
+ fichier. Chaques personne a potentiellement 3 actions possibles sur un fichier:
+ lecture, écriture et execution
+
+  le r correspond à la lecture (Read en anglais)
+  le w correspond à l'écriture (Write en anglais)
+  le x correspond à l'execution (eXecute en anglais :p)
+  le - correspond à une permission inexistante
+
+ dans l'exemple du dessus:
+   'drwx---r-x' 2 veins  admins   512 Apr  6 16:46 toto
+ on explose en quatre parties
+
+ *  d  : la premiere lettre correspond au type de fichier, d veut dire répertoire,
+  (directory en anglais) - veut dire que c'est un fichier
+  il existe d'autres lettres, on verra ca le moment venu
+
+ * rwx : correspond aux permission du propriétaire (celui qui a crée le fichier)
+  ici 'veins', il peut lire le fichier, écrire dedans, et l'executer
+
+ * --- : correspond aux permissions du groupe
+  les membres du groupe 'admins' ne peuvent rien faire sur ce fichier
+
+ * r-x : correspond a tout les 'autres' ils peuvent lire et éxecuter le fichier
+
+ <k`> moyen mnemotechnique "ugo"
+ <k`> User Group Others (utilisateur groupe autres)
+
+
+ Pour s'entrainer, on va créer un fichier à l'aide de la commande 'touch'
+
+	$ touch kikoo
+	$ ls
+
+ on a crée le fichier 'kikoo', il est vide
+
+	$ ls -l
+	 total 10
+	 -rw----r--   1 veins  admins     0 Apr  6 16:53 kikoo
+	 drwx---r-x   2 veins  admins   512 Dec 29 17:45 my_bin
+	 drwx---r-x  18 veins  admins  1024 Apr  5 08:08 my_web
+	 drwx---r-x   5 root   admins   512 Mar 24 11:42 to_analyze
+	 drwx---r-x   2 veins  admins   512 Apr  6 16:46 toto
+	 drwx---r-x   2 root   admins   512 Apr  1 18:56 work
+	$
+
+ vous voyez qu'il appartient à 'veins', et au groupe 'admins'
+ vous pouvez en déduire que 'veins' peut tout faire sur ce fichier (sauf l'executer)
+ que les 'admins' ne peuvent rien faire
+ et que les autres peuvent le lire
+
+
+ on change les permissions d'un fichier à l'aide de la commande 'chmod'
+ chmod est suivi au minimum de deux arguments; par exemple
+
+	$ chmod 755 fichier
+
+ la valeur du premier argument est en fait les permissions à appliquer
+ 7 = lecture, ecriture, execution pour le propriétaire
+ 5 = lecture et execution pour le groupe
+ 5 = lecture et execution pour les autres
+
+
+[16:57] <veins>	questions ?
+[16:57] <Jeanb>	je comprend pas, c pwd ou $ pwd ?
+[16:57] <veins>	pwd
+[16:57] <Jeanb>	oki
+[16:57] <veins>	le $ représente le prompt du shell
+[16:57] <Jeanb>	oki
+[16:58] <Jeanb>	sinon quelle est la différence entre read et execute sur un dossier ?
+[16:58] <veins>	jean: les permissions sur un dossier ne fonctionnent pas pareil que sur
+		un fichier
+[16:58] <Jeanb>	oki
+[16:58] <veins>	par exemple, tu donne la permission d'executer sur un répertoire
+[16:58] <veins>	ca permet d'executer des commandes à l'interieur du répertoire
+[16:59] <Jeanb>	ah oki ;-)
+[16:59] <veins>	imagineons que tu vire les permissions d'execution dans un repertoire
+[16:59] <veins>	tu ne pourras pas lister les fichiers a l'interieur
+[16:59] <Jeanb>	oki
+
+
+ Bon on va reprendre.
+ On a donc vu le 755, mais c'est pas clair encore. D'ou j'ai bien pu sortir cette valeur ?
+ en fait chaque chiffre correspond au groupe de personne à qui s'addresse la permission
+ (on a explosé le truc en trois tout à l'heure, vous vous rappellez ? ugo, user, group, others)
+ mais chaque chiffre est en réalité l'addition de trois autres qu'on a également vu
+   4: read
+   2: write
+   1: execute
+
+ 1 + 4 = 5 => read, execute
+
+  <k`> pour ceux qui savent compter en binaire l'analogie est flagrante
+	7 = 111 = rwx
+	5 = 101 = r-x
+
+ c'est aussi con que ca  :)
+ voila donc comment marche le chmod
+ Mais vous noterez aussi que tout à l'heure, j'ai crée le fichier, je n'ai fait aucun
+ 'chmod' dessus et pourtant il disposait déjà de permissions
+
+ C'est ce que l'on appelle l' umask, il est fixé par défaut à 022 et il s'agit d'une
+ soustraction à effectuer aux permissions maximale
+
+ par exemple:
+  les permissions maximales sont:  777
+  l'umask est fixé à 022
+  tout nouveau fichier vaudra: 777 - 022 = 755 = (111) (101) (101) = rwxr-xr-x
+
+  Sur l'exemple 'kikoo' l'umask etait 173
+
+ pareil pour les propriétaires et groupes, il existe une manière de les changer
+ ca se fait à l'aide de la commande 'chown' (change owner)
+   $ chown toto.users fichier
+
+ Changeras le fichier de manière a ce que 'toto' soit le propriétaire et 'users' le groupe
+ les permissions restent inchangées (dans la plupart des cas, certains cas, que je
+ n'expliquerai pas encore, forcent un changement)
+ On va arriver à la fin de l'atelier, je vous donne encore quelques commandes, utilisez
+ la commande 'man' pour en savoir plus, de la sorte:
+   $ man chmod
+
+ la commande 'id' vous permet de savoir quel est votre login, votre uid et votre groupe
+ (entre autres)
+
+	$ id
+	 uid=101(veins) gid=100(admins) groups=100(admins)
+
+ * la commande 'cat' vous permets de lire le contenu d'un fichier
+ * la commande 'rm' vous permets de supprimer un fichier
+ * la commande 'rmdir' vous permets de supprimer un répertoire
+
+ enfin en appuyant sur CTRL et D, vous serez déloggué
+
+
+[17:09] <veins>	des questions ?
+[17:09] <pollux68_> veins# rmdir supprime un repertoire vide
+[17:10] <veins>	pour supprimer un répertoire non vide
+[17:10] <veins>	on tapes:  rm -rf repertoire
+[17:10] <pollux68_> ouais
+[17:10] <pollux68_> r pour recursif
+[17:10] <pollux68_> f pour que rm ne te demande pas confirmation
+[17:10] <pollux68_> i pour qu'il le fasse
+[17:10] <pollux68_> i = interactif
+[17:10] <veins>	lisez les pages du man
+[17:10] <veins>	c'est l'outil que vous allez utiliser le plus souvent  :)
+[17:11] <T0aD>	ca ne sert a rien d etre exhaustif ici, vous ne retiendrez pas la
+		moitie si vous ne pratiquez pas
+[17:11] <T0aD>	donc www.linuxiso.org, hop, download d'une distrib et on teste tout ca
+[17:11] <veins>	www.openbsd.org  :)
+[17:11] <veins>	www.freebsd.org
+[17:11] <veins>	www.netbsd.org
+[17:11] <k`>	get.qnx.com
+[17:11] <YoGi>	ou pour ceux qui sont sous windows et qui veulent pas installer un
+		autre os et jouer avec les partitions, www.cygwin.com :)
+[17:11] <_xo`>	oué c bien moa j ai pas l adsl ;)
+[17:12] <kirtap> une question de débutant : existe-t-il un unix qui pourrait ouvir dans
+		une fenetre windows et qui permettrait de tester rapidement les commandes ?
+		C'est peut-être une question stupide mais tant pis
+[17:12] <YoGi>	kirtap : cygwin oui
+[17:12] <veins>	kirtap: il existe demolinux qui te permet de manipuler linux
+[17:12] <veins>	sans l'installer
+[17:12] <kirtap> donc pas du tout stupide :-)
+[17:12] <veins>	en bootant sur un cd
+[17:14] <kirtap> peut-on installer plusieurs os  sur une machine ?
+[17:14] <T0aD>	kirtap: bien sur, le tout est de gerer leur boot
+[17:14] <T0aD>	et donc d avoir un boot manager que tu puisses configurer simplement
+[17:14] <T0aD>	le LILO (boot manager de Linux de base) s occupe tres bien de tout ca
+[17:14] <kirtap> ah oui j'en ai entendu parlé
+[17:14] <k`>	boot manager : au demarrage de l'ordinateur tu choisis le systeme a lancer
+[17:14] <T0aD> et n est pas vraiment complexe a configurer
+[17:15] <kirtap> pas trop difficile a configurer ?
+[17:15] <kirtap> ok merci
+[17:15] <Jeanb>	très bon site : http://www.distrowatch.com/
+[17:16] <veins>	voila qui cloture ce premier atelier Unix
+[17:16] <veins>	les logs seront dispos sous peu
+[17:17] <veins>	:)
+
+
+Infos complementaires sur cygwin: 
+
+* What is Cygwin?
+ See <http://sources.redhat.com/cygwin/>.
+
+* How do I install cygwin?
+ Download <http://sources.redhat.com/cygwin/setup.exe> and run it. Or
+ run it directly from your browser. This will then download the list
+ of available packages, and offer to install them for you. There are a
+ number of options within setup to control installation details.
+
+* What configuration options does setup allow?
+
+ You can:
+	- Download from Internet to Current Directory
+	- Install from Internet
+	- Install from Current Directory
+
+ When installing, you will have to specify:
+	- install root directory (default is C:\cygwin)
+	- Default Text File Type ("DOS" or "Unix")
+	- Install For ("All" or "Just Me")
+

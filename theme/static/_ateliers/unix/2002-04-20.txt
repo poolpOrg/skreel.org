@@ -1,0 +1,487 @@
+Atelier UNIX #3 - Samedi 20 Avril 2002
+ 'prof': bofh [veins@skreel.org]
+
+
+[15:59] <bofh>	bon
+[15:59] <bofh>	on commence pas tout de suite
+[16:00] <bofh>	mais tout ceux qui n'ont pas de shell
+[16:00] <bofh>	envoyez moi en privé un login
+[16:11] <bofh>	juste une précision
+[16:11] <bofh>	obtenir un shell sur notre serveur de shell est gratuit
+[16:11] <bofh>	MAIS
+[16:11] <bofh>	vous DEVEZ signer une décharge
+[16:11] <bofh>	sinon je suis obligé de supprimer le compte après chaque atelier
+[16:12] <bofh>	une décharge est un papier qui dit que vous etes responsable de votre
+		shell, que vous allez pas faire de conneries
+[16:12] <bofh>	pas tenter de piratage et que vous prendrez soin de votre mot de passe
+[16:12] <bofh>	c'est très important
+[16:13] <TheXorX> oké
+[16:13] <Lacteus`a> no prob
+[16:13] <GreyMage> en parlant de piratage, y'aura un atelier sur la sécurisation d'un unix ?
+[16:13] <bofh>	faut envoyer la décharge à l'adresse de l'assoc
+[16:13] <bofh>	Grey: ca fera partie de cet atelier
+[16:13] <bofh>	;)
+[16:13] <GreyMage> lol
+[16:13] <Lacteus> bofh, on pourra te commander openBSD 3.1 à sa sortie ?
+[16:14] <bofh>	Lacteus: oui
+[16:14] <Lacteus> cool
+[16:14] <bofh>	mais on est pas revendeurs officiels
+[16:14] <bofh>	donc tu auras pas la joli pochette
+[16:14] <asphro> GreyMage pour securiser unix faux savoir s en servir et le gerer au
+		mieux c est le meilleur moyen
+[16:14] <Lacteus> lol
+[16:14] <Lacteus> un bon vieux cd gravé, ça fera l'affaire
+[16:15] <T0aD>	asphro: exactement ;)
+[16:15] <T0aD>	ceux qui recherchent uniquement a devenir bon en securite, de tte facon,
+		on sait ou ils finissent
+[16:16] <asphro> chez microsoft ?
+[16:16] <bofh>	root chez krosoft ?
+[16:16] <TheXorX> lol
+[16:16] <bofh>	lol
+[16:16] <asphro> ;)
+[16:16] <xoyi>	a merde c commencé
+[16:16] <bofh>	bien
+[16:17] <bofh>	on va commencer d'ici 5 minutes
+[16:19] <bofh>	petit résumé rapide pour savoir ce qu'on va voir  ;p
+[16:19] <bofh>	aujourd'hui
+[16:19] <bofh>	on va voir ce qui fait la force d'unix,
+[16:19] <bofh>	les pipes, les redirections
+[16:19] <bofh>	les conditions
+[16:19] <bofh>	les valeurs de retours
+[16:19] <bofh>	et un editeur de texte qui s'appelle 'vi'
+[16:20] <bofh>	et on verra aussi deux autres trucs
+[16:20] <bofh>	les meta caractères
+[16:20] <bofh>	et comment faire une recherche sur le systeme
+[16:20] <T0aD>	autre *tres bon* client SSH pour windows:
+ ftp://anonymous:cool@ftp.openbsd.org/pub/Security/Crypto/SSH/SSHWinClient-3.0.0.exe
+
+[16:21] <bofh>	bon
+[16:21] <bofh>	contrairement à l'autre atelier
+[16:21] <bofh>	ici je ne vous empeche pas de parler
+[16:21] <bofh>	mais essayez de garder le même comportement
+[16:22] <bofh>	et de pas poser vos questions n'importe quand  :)
+[16:22] <bofh>	ok ?
+[16:22] <Lacteus> ok, respect the boss =)
+[16:22] <GreyMage> sinon on se fat punir par le prof ? :)
+[16:22] <bofh>	exact  :)
+[16:22] <T0aD>	userdel :)
+[16:22] <TheXorX> oups
+[16:22] <silken> ok
+
+
+ Avant de vraiment commencer, je vous file une adresse utile si vous n'avez pas
+ accès aux man (pages du manuel) http://www.openbsd.org/cgi-bin/man.cgi
+ si vous avez un shell sur  pdksh.skreel.org  vous avez accès au man donc pas de
+ 'bleme. Je vous conseille de mettre cette page dans vos favoris, car elle sera
+ votre meilleure amie dans le monde Unix  ;)
+
+
+ Bon on va commencer par voir un petit truc, on a déjà vu que Unix est un système
+ multi utilisateur, ce qui signifie que vous pouvez tous travailler sur la même
+ machine en _même_ temps, le système se chargera de vous donner accès ou non à de
+ la mémoire. Votre seul problème est de faire votre travail  :)
+
+ Vous avez des commandes qui vous permettent de savoir qui est la en meme temps
+ que vous, certaines autres commandes vous permettent de communiquer avec eux
+
+[16:25] <bofh> ok ?
+[16:26] <xoyi> ok
+[16:26] <Lacteus> ok
+[16:26] <silken> ok
+[16:26] <GreyMage> ok
+
+ Il faut se souvenir que unix est a la base d'internet, et que par conséquent il
+ est TRES développé pour ce qui est communication.
+
+	$ users
+	 boubou root veins yihaa
+	$
+
+ on peut par exemple voir ici qu'il y a 4 utilisateurs (dont moi meme) en ce
+ moment même sur la machine; chacun est occupé à ses taches et n'a pas a se soucier
+ des autres, mais il peut communiquer avec eux.
+ Je reviendrais tres souvent la dessus a l'avenir
+
+ Il existe une commande qui permet de se renseigner sur les utilisateurs: 'finger'
+
+	$ finger veins
+	 Login: veins                            Name:
+	 Directory: /home/veins                  Shell: /bin/sh
+	 On since Sat Apr 20 16:27 (CEST) on ttyp2 from guinness.skreel.org
+	 No Mail.
+	 No Plan.
+	$
+
+ Elle nous informe du login, éventuellement du nom de l'utilisateur, de son shell,
+ son répertoire, depuis quand il est connecté sur la machine, s'il a des mails, et
+ ou "il se trouve"
+ C'est une commande assez souvent utilisée, tout dépend en fait de la boite dans
+ laquelle on se trouve, sur les tres grosses boites c'est très utilisé, dans les
+ plus petites ce n'est jamais utilisé (tout le monde se connait ?)
+
+ On une de ses utilisation apres avoir 'appris' l'editeur de texte, ca sera un
+ petit exercice en quelque sorte  ;)
+ Encore une fois, je risque de vous en parler a plusieurs reprises durant les
+ ateliers, le but etant de vous faire comprendre ce qu'est reellement un environnement
+ multi utilisateurs.
+
+
+ On va mettre ca de cote, et voir les pipes (les 'tubes' en bon francais)
+ Unix a été concu d'une manière TRES differentes par rapports à d'autres systemes
+
+ Prenons l'exemple de windows (ou macintosh), on a des applications de bases
+ qui peuvent accomplir une foultitude de taches
+ Unix procède à l'inverse: il fournit plein d'utilitaires qui ne font que peu
+ de choses, mais avec la possibilité de travailler ensemble.
+
+ par exemple
+ on va avoir un utilitaire qui va afficher un fichier ('cat', 'more', 'less')
+ un autre utilitaire qui va lire X lignes d'un fichier ('tail', 'head'...)
+ on va pouvoir combiner ces utilitaires pour en faire un plus puissant
+
+ Il est possible sur un unix de combiner des dizaines de commandes pour arriver
+ à nos fins.
+
+ vous vous rappellez la commande 'users' ? celle que j'ai utilisé un peu plus haut ?
+ elle affiche les utilisateurs présents sur le système. Et bien, comment fait-on pour
+ afficher le nombre d'utilisateurs ?
+ il n'existe aucune commande de base pour le faire
+
+[16:35] <T0aD>	(moi je sais ! moi je sais !)
+[16:35] <T0aD>	:P
+[16:35] <Lacteus> lol
+[16:36] <GreyMage> on compte le nb d'espace dans le resultat ?
+
+ on va utiliser users qui affiche les utilisateurs, et 'wc' (Word Count) qui compte
+ le nombre de mots. ce qui donne:
+
+	$ users | wc -w
+	 4
+	$
+
+ En combinant deux commandes on a notre resultat, et c'est ce qui fait la force d'Unix
+
+ Mais comment ca ce fait que l'on puisse les combiner comme ca ?
+ on utilise des descripteurs de fichiers pour expliquer ce principe
+ (ceux qui ont assistés à l'atelier php vont comprendre rapidement ;p)
+ notre shell nous fournit trois descripteurs de fichiers de base
+
+  0, stdin  qui correspond a l'entree standard (dans notre cas, le clavier)
+  1, stdout qui correspond a la sortie standard (dans notre cas, l'écran)
+  2, stderr qui correspond a la sortie d'erreur (dans notre cas l'ecran aussi)
+
+ celui qui nous interesse est le second (stdout) la sortie standard.
+ quand 'users' va nous afficher le resultat, il va l'ecrire sur la sortie standard.
+
+ Quand on utilise un tube | (au clavier: altGr + 6), on redirige cette sortie
+ standard vers l'entree standard d'un autre utilitaire
+
+[16:40] <bofh>	vous comprenez ?
+[16:40] <GreyMage> pas con :)
+[16:40] <T0aD>	GreyMage: tu parles des designers d unix la ? :)
+[16:40] <GreyMage> ouais :)
+
+ Vous verrez a l'avenir que vous utiliserez ENORMEMENT de pipe, et meme si
+ vous avez du mal a comprendre, ca vous viendra naturellement et vous les
+ utiliserez naturellement a la fin
+
+[16:41] <Lacteus> on peut utiliser plusieurs pipes non ?
+[16:41] <bofh>	oui
+[16:41] <GreyMage> y'a pas aussi un truc genre command > toto.txt ?
+[16:42] <bofh>	si, on va voir ca des maintenant
+
+ Les pipes ont un equivalent, pour rediriger vers des fichiers
+	$ touch fichier
+	$ cat fichier
+	$ echo "toto" > fichier
+	$ cat fichier
+	 toto
+	$
+
+   echo "toto" > fichier
+ va rediriger la sortie standard (ici "toto") vers le fichier nommé 'fichier'
+ Si ce fichier n'existe pas, il sera automatiquement crée
+ S'il existe, le contenu en sera ecrasé (ecrire se fera en debut du fichier)
+ <T0aD> (entre autres, windows sait aussi faire des redirections *simples*)
+
+[16:43] <GreyMage> (c utile ce que dit veins la pour les manuels de commandes
+	qui font un millier de pages :)
+
+ Il y a un equivalent pour l'ajout
+
+	$ echo "toto" >> fichier
+	$ cat fichier
+	 toto
+	 toto
+	$
+
+ cette fois si le fichier existait déjà, il ne sera pas écrasé.
+ "toto" ira se coller a la fin du fichier
+
+[16:44] <bofh>	voila
+[16:44] <GreyMage> c tout ?
+[16:44] <bofh>	en ce qui concerne les redirections oui
+[16:44] <bofh>	il y a pas besoin d'en savoir plus  :)
+[16:45] <bofh>	c'est aussi simple que ca
+[16:45] <GreyMage> y'a pas un truc genre command > toto.txt > err.txt ?
+[16:45] <bofh>	non
+[16:45] <T0aD>	(on verra plus tard les < et <<, et oui ils existent)
+[16:45] <GreyMage> pour savoir si y'a eu des erreurs durant l'execution de la commande ?
+[16:45] <bofh>	command va ecrire dans l'entree standart
+[16:45] <bofh>	| va rediriger dans toto.txt
+[16:46] <bofh>	mais toto.txt ne va pas ecrire dans l'entree standart
+[16:46] <bofh>	donc il n'y aura rien a rediriger dans err.txt
+[16:46] <GreyMage> oki
+[16:46] <bofh>	pour faire ce que tu veux faire on utilise ce qu'on appelle un builtin
+[16:46] <bofh>	mais c'est pas pour tout de suite
+[16:46] <bofh>	;p
+[16:46] <GreyMage> :)
+
+ on a vu les pipes et les redirections, cela permet d'obtenir des commandes plus
+ puissantes; mais unix sait aussi enchainer les commandes.
+
+ En combinant ces deux possibilités on arrive a faire en une ligne de commande,
+ l'équivalent d'un petit programme
+
+	 $ clear && ls
+
+ 'clear' va effacer l'ecran, et si il reussi, le shell va executer 'ls'
+ La seconde commande n'est executée seulement à la condition que la premiere commande
+ reussisse (s'execute correctement)
+ Comment fait le shell pour savoir si la precedente commande a reussie ?
+
+[16:49] <GreyMage> il reflechit :)
+
+ En utilisant la valeur de retour  :)
+ Si vous avez acces au man, faites un 'man rm'
+ vous verrez cela :
+   If an error occurs, rm exits with a value >0.
+ en francais :
+   si une erreur a lieu, rm se termine et renvoit une valeur supérieure a zero.
+
+ On en déduit que chaque commande renvoie une valeur au shell, et le secret c'est
+ que si cette valeur est nulle alors le programme a reussi, sinon il a echoue
+ (pour le shell)
+
+[16:52] <T0aD>	pour verifier vous memes les codes de retour: $ echo $?
+[16:52] <GreyMage> il previent quand meme que l'autre a renvoyé une erreur ?
+[16:52] <bofh>	ca depends du programme
+
+ Quand on a fait
+ 	$ clear && ls
+ 
+ Le shell a regardé si 'clear' a renvoyé 0 , et si le cas, il a executé 'ls'
+ sinon il s'arrete la. c'est la condition 'ET' ('AND', &&)
+
+ On a la condition 'OU' ('OR', ||) a disposition, qui est tres legemerent
+ differente, mais qui s'utilise de la meme maniere
+
+	$ rm toto || echo "raté"
+
+ on essaie d'effacer le fichier 'toto', si ca echoue, la prochaine commande
+ sera executée, sinon le shell va s'arreter la
+
+[16:54] <GreyMage> ok le or fait le contraire du and
+[16:54] <bofh>	oui
+
+ il est possible de créer des commandes encore plus sophistiqués, en
+ les imbriquant dans des parenthèses. Du genre:
+
+	$ ( echo "toto"; ls; clear; echo "toto") | wc -w
+
+ mais on ne va pas encore voir ca, sachez juste que ca existe  :)
+
+[16:57] <GreyMage> cda ferait koi ca ?
+[16:58] <bofh>	ca executerait tout ce qui est entre parentheses
+[16:58] <bofh>	puis ca piperait le resultat dans wc -w
+[16:58] <bofh>	ce qui afficherait au final: 1
+[16:58] <bofh>	m'enfin, ne vous en faites pas pour l'instant
+[16:58] <bofh>	c'est pas important
+[16:58] <GreyMage> ok lol ca reviendrait au meme de juste ecrire echo "toto" | wc -w
+[16:58] <bofh>	grey: oui
+[16:58] <bofh>	j'ai tapé un exemple en vitesse  ;p
+[16:59] <GreyMage> mouarf
+[16:59] <bofh>	il faut aussi savoir que le shell
+[16:59] <bofh>	dispose d'un language plus ou moins evolué
+[16:59] <bofh>	vous apprendrez ce language au fur et a mesure des ateliers
+[16:59] <bofh>	car il est très simple pour qui sait utiliser son shell
+[16:59] <GreyMage> l'equivalent de batch tu parles la ?
+[16:59] <bofh>	oui
+[17:00] <bofh>	mais comme on peut utiliser les pipe
+[17:00] <bofh>	et les redirections
+[17:00] <bofh>	ca permets de faire des scripts REELLEMENT tres puissants
+[17:00] <bofh>	on va voir encore deux choses pendant cet atelier
+[17:01] <bofh>	la premiere chose est l'utilisation de 'find' pour trouver un fichier
+[17:01] <bofh>	c'est k` qui a tenu a ce que je vous en parle
+[17:01] <bofh>	c'est très utile
+[17:01] <bofh>	pour le comprendre on va voir ce que sont les meta caracteres (meta tags)
+
+ le shell permet d'utiliser des caracteres pour en remplacer d'autres, * et ? sont
+ les meta caracteres les plus courants
+  ? permet de remplacer UN caractere
+  * permet de remplacer aucun ou plus caractères
+
+ par exemple
+	$ ls *.php
+
+ affichera tout les fichiers qui se terminent par .php
+
+	$ ls ?.php
+
+ affichera tout les fichiers qui ne contiennent qu'un seul caractere suivi de .php
+
+[17:04] <Lacteus> $ ls lacteus?.php --> lacteus1.php lacteusa.php
+[17:04] <bofh> Lacteus: oui
+
+ on peut bien sur les placer au milieu de noms
+	$ ls toto*toto.php
+
+ affichera tout les fichiers commencant par  toto et se terminant par toto.php
+ (totoReveDetoto.php totonimptoto.php etc...) y compris le fichier nommé totototo.php
+
+[17:04] <GreyMage> et s'il y a un fichier qui s'appelle toto*toto.php ?
+[17:05] <bofh>	en général on evites de créer des fichiers avec des caracteres bizarres ;p
+[17:05] <bofh>	mais ca l'afficherais aussi
+[17:05] <GreyMage> ouais mais je suis bizzare moi :)
+[17:05] <T0aD>	GreyMage: * est un caractere a la base :)
+		il suffit de ne pas le faire 'evaluer' par le shell :)
+[17:06] <T0aD>	(ce qui est fait en entourant le nom avec des '' )
+
+ La commande 'find', servant a la recherche de fichier, utilise les meta caracteres
+
+	$ find /home/veins -name "toto.php"
+
+ va me rechercher dans /home/veins , et les sous repertoires, tout fichier se
+ nommant toto.php et aucun autre fichier, ni "atoto.php" ou "toto.phps"
+ pour pallier ca on utilisera a la place
+
+	$ find /home/veins -name "*toto.php*"
+
+[17:07] <GreyMage> les "" servent a quelque chose ?
+[17:07] <bofh>	oui et non
+[17:07] <bofh>	dans le premier exemple non
+[17:07] <T0aD>	GreyMage: a 'evaluer' la chaine, ici a rien
+[17:07] <bofh>	mais il est important d'apprendre a les utiliser au maximum
+[17:07] <bofh>	dans le pire des cas les guillemets ne feront rien
+[17:08] <bofh>	dans le meilleur des cas ils eviteront que la commande ne fasse
+		autre chose que ce qui est prévu
+[17:08] <GreyMage> oki
+
+ dans mon deuxieme exemple
+   $ find /home/veins -name "*toto.php*"
+ si un fichier tzetzetzettoto.php  existe dans /home/veins , il sera 'trouvé'
+ car dans le nom, il y a 'toto.php'
+
+ deux conseils :
+  1) evitez de faire un find en dehors de votre répertoire
+   genre: find / -name "monfichier"
+   sinon l'administrateur vous tappe dessus
+  2) apprennez à organiser votre répertoire pour ne pas devoir chercher de fichiers
+ n.d.k` : c'est bien toi qui dit ca ?
+
+
+ On va terminer avec une petite introduction a 'vi' , un editeur de texte tres puissant
+ on ne va pas le voir entierement car ca pourrait prendre beaucoup de temps, simplement
+ comment s'en servir pour une utilisation de tout les jours
+
+	$ vi toto.txt
+
+ va nous lancer 'vi' pour ecrire dans le fichier 'toto.txt'
+
+ 'vi' fonctionne dans deux modes: un "mode de saisie" et un "mode de commandes"
+ Lorsque vous etes en saisie, tout ce que vous tapez est inscrit dans le fichier
+ Quand vous etes en commande, vous pouvez saisir des 'mots clefs'pour manipuler le fichier
+ (sauvegarder, copier, coller, rechercher un mot, effacer un caractere ...)
+
+ Au depart, vous etes en mode commande
+ en appuyant une fois sur la touche 'i' ou la touche 'a' vous passez en mode de saisie
+ (i pour 'insert', a pour 'append', il n'y a pas d'enormes differences entre les deux)
+
+ vous saisissez votre texte, comme vous voulez, rien de bien savant :)
+ n.d.k` : lorsque vous etes en mode saisie, vous ne pouvez effacer, avec la touche
+	'backspace' (la fleche dirigée vers la gauche, au dessus de 'entree') que les
+	caracteres que vous venez de taper
+	(voir deux lignes plus bas pour les autres caracteres)
+ 
+ On va plutot voir le mode commande qui est deja plus interessant.
+ Pour (re)passer en mode commande, appuyez deux fois sur le touch  'Echap'
+ (même si une seule fois est nécessaire, prenez le reflexe de toujours appuyer
+  deux fois, je vous expliquerai pourquoi une autre fois :p)
+
+ Vous avez maintenant plusieurs possibilites.
+  - en appuyant sur la touche 'x', vous effacez le caractere sur lequel
+   se trouve le curseur
+  - en appuyant deux fois sur la touche 'd' (dd), vous supprimer toute la
+   ligne sur laquelle se trouve le curseur
+  - si vous tappez /toto , vi va rechercher la premiere occurence de 'toto'
+   dans le texte
+
+[17:16] <bofh>	des questions ?
+[17:16] <bid_`>	nop
+[17:16] <GreyMage> non c bon, j cru que ca merdais mais c bon
+[17:16] <bofh>	ok
+
+  - pour sauvegarder, on tape  :w  (le ':' est important)
+  - pour quitter    , on tape  :q  (meme remarque)
+  - pour quitter en sauvegardant,  :wq
+  - pour quitter sans sauvegarder, :q!
+   (sinon, si vous avez modifié le fichier, vi refuse de vous laisser
+    partir tant que vous n'avez pas sauvegardé)
+
+
+ Maintenant qu'on sait utiliser 'vi' de base, on va apporter des informations
+ pour le 'finger' , il etait bien vide tout a l'heure  :)
+
+ Dans votre repertoire home, vous allez créer un fichier .project detaillant
+ vos "projets", et un fichier .plan avec la description de votre chambre :)
+
+[17:21] <GreyMage> ?
+[17:21] <silken> pk ?
+[17:21] <bofh>	c'est un petit exo  ;)
+
+	$ finger veins
+	 Login: veins                            Name:
+	 Directory: /home/veins                  Shell: /bin/sh
+	 On since Sat Apr 20 16:27 (CEST) on ttyp2 from guinness.skreel.org
+	 No Mail.
+	 No Plan.
+	$
+
+	$ vi .plan
+	*type* *type* *type* *sauvegarde*
+
+	$ finger veins
+	 Login: veins                            Name:
+	 Directory: /home/veins                  Shell: /bin/sh
+	 On since Sat Apr 20 16:27 (CEST) on ttyp2 from guinness.skreel.org
+	 No Mail.
+	 Plan:
+	 Je suis dans les locaux de skreel
+	$
+
+	$ vi .project
+	*type* *type* *type* *sauvegarde*
+
+	$ finger veins
+	 Login: veins                            Name:
+	 Directory: /home/veins                  Shell: /bin/sh
+	 On since Sat Apr 20 16:27 (CEST) on ttyp2 from guinness.skreel.org
+	 No Mail.
+	 Project:
+	 Je bosse sur la chimie thermo nucleaire
+	 Plan:
+	 Je suis dans les locaux de skreel
+	$
+
+
+[17:23] <Lacteus> excellent, je connaissais po
+[17:26] <bofh>	bon c'est la fin de cet atelier
+[17:26] <Lacteus> cool
+[17:26] <bofh>	la semaine prochaine on verra comment utiliser les filtres
+[17:26] <bofh>	grep, sed
+[17:27] <bofh>	et on continueras a apprendre a utiliser 'vi'
+[17:28] <kirtap> Merci beaucoup a toute l equipe de skreel pour cet atelier.
+		C est tres plaisant a suivre. Je vais bosser le cours durant la semaine
+[17:28] <Lacteus> astalavista bye bye
+[17:31] <bofh> les resumes des ateliers seront en ligne ce soir sur
+		http://ressources.skreel.org/ateliers.php

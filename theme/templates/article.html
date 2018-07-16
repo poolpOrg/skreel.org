@@ -1,0 +1,22 @@
+{% extends "_base_news.html" %}
+
+{% block news %}
+<TR><TD HEIGHT=1 COLSPAN=2 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=1 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    <TD HEIGHT=1 COLSPAN=2 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=100 HSPACE=0 VSPACE=0 SRC="/theme/_images/h335599.png" BORDER=0></TD>
+    </TR>
+<TR><TD HEIGHT=12 WIDTH=10 BACKGROUND="/theme/_images/index_centre01.png"><IMG HEIGHT=1 WIDTH=10 HSPACE=0 VSPACE=0 SRC="/theme/_images/index_centre01.png" BORDER=0></TD>
+    <TD WIDTH=100%><B><FONT CLASS=titre><A HREF="/{{article.url}}">{{article.title}}</A></FONT></B></TD>
+    <TD BGCOLOR=#FF9700 ALIGN=CENTER><FONT CLASS=topic><NOBR>{{article.category}}</NOBR></FONT></TD>
+    <TD HEIGHT=12 WIDTH=8><IMG HEIGHT=1 WIDTH=8 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>
+<TR><TD HEIGHT=1 COLSPAN=4 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=1 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>
+<TR><TD WIDTH=10><IMG HEIGHT=1 WIDTH=10 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    <TD COLSPAN=2><FONT>&nbsp;&nbsp; <A HREF="mailto:{{article.author}}@skreel.org">{{article.author}}</A> - soumis le {{article.date}}
+    <BR><DIV ALIGN=JUSTIFY>
+      {{article.content}}
+    <BR>&nbsp;</DIV></FONT></TD>
+    <TD WIDTH=8><IMG HEIGHT=1 WIDTH=8 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>
+
+{% endblock %}
