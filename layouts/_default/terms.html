@@ -1,0 +1,19 @@
+{{ define "news" }}
+<TR><TD HEIGHT=1 COLSPAN=2 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=1 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    <TD HEIGHT=1 COLSPAN=2 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=100 HSPACE=0 VSPACE=0 SRC="/theme/_images/h335599.png" BORDER=0></TD>
+    </TR>
+<TR><TD HEIGHT=12 WIDTH=10 BACKGROUND="/theme/_images/index_centre01.png"><IMG HEIGHT=1 WIDTH=10 HSPACE=0 VSPACE=0 SRC="/theme/_images/index_centre01.png" BORDER=0></TD>
+    <TD WIDTH=100% COLSPAN=2><B><FONT CLASS=titre>{{ .Title }}</FONT></B></TD>
+    <TD HEIGHT=12 WIDTH=8><IMG HEIGHT=1 WIDTH=8 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>
+<TR><TD HEIGHT=1 COLSPAN=4 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=1 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>
+<TR><TD WIDTH=10><IMG HEIGHT=1 WIDTH=10 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    <TD COLSPAN=2><FONT>
+    {{ range .Data.Terms.ByCount }}
+    <BR>&nbsp;&nbsp; <A HREF="{{ .Page.RelPermalink }}">{{ .Page.Title }}</A> ({{ .Count }})
+    {{ end }}
+    <BR>&nbsp;</FONT></TD>
+    <TD WIDTH=8><IMG HEIGHT=1 WIDTH=8 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>
+{{ end }}

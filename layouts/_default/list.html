@@ -1,0 +1,8 @@
+{{ define "news" }}
+{{- $pages := .Pages }}{{ if .IsHome }}{{ $pages = .RegularPagesRecursive }}{{ end -}}
+{{- $paginator := .Paginate $pages }}
+    {{ range $paginator.Pages }}
+{{ partial "entry.html" (dict "page" . "excerpt" true) }}
+    {{ end }}
+{{ partial "pager.html" $paginator }}
+{{ end }}

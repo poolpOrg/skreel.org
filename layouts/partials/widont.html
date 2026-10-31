@@ -1,0 +1,3 @@
+{{- /* Typogrify's widont filter, which Pelican applied to titles and content:
+   the last two words of a block are joined with a non-breaking space. */ -}}
+{{- return replaceRE `((?:</?(?:a|em|span|strong|i|b)[^>]*>)|[^<>\s])\s+([^<>\s]+\s*(?:</(?:a|em|span|strong|i|b)>\s*)*(?:</(?:p|h[1-6]|li|dt|dd)>|$))` "$1&nbsp;$2" . -}}

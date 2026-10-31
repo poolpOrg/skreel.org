@@ -1,22 +1,16 @@
 # skreel.org
 
+This repository holds all content for the https://skreel.org website.
+
+Articles from the website are located inside `content/posts/`.
+The website look is located inside `layouts/` and `static/theme/`.
+
 ## pre-requisites
 
-- python3
-- pelican
-
+- hugo
 
 ## build website
 
-Fetch latest copy of pelican theme for skreel.org and enter the directory:
+Rebuild website in subdirectory `public`:
 
-    $ git clone https://github.com/poolpOrg/skreel.org
-    $ cd skreel.org
-
-Fetch latest copy of posts for skreel.org:
-
-    $ git clone https://github.com/poolpOrg/skreel.org_posts
-
-Rebuild website in subdirectory `output`:
-
-    $ pelican -t theme -o output skreel.org_posts/content
+    $ hugo

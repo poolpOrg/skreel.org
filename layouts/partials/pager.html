@@ -1,0 +1,14 @@
+{{- /* Previous/next links under a paginated news list. */ -}}
+{{ if gt .TotalPages 1 }}
+<TR><TD HEIGHT=1 COLSPAN=2 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=1 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    <TD HEIGHT=1 COLSPAN=2 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=100 HSPACE=0 VSPACE=0 SRC="/theme/_images/h335599.png" BORDER=0></TD>
+    </TR>
+<TR><TD WIDTH=10><IMG HEIGHT=1 WIDTH=10 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    <TD COLSPAN=2 ALIGN=CENTER><FONT CLASS=petit>
+    {{ if .HasPrev }}<A HREF="{{ .Prev.URL }}">&laquo; news plus r&eacute;centes</A>{{ else }}&laquo; news plus r&eacute;centes{{ end }}
+    &nbsp;|&nbsp; page {{ .PageNumber }} / {{ .TotalPages }} &nbsp;|&nbsp;
+    {{ if .HasNext }}<A HREF="{{ .Next.URL }}">news plus anciennes &raquo;</A>{{ else }}news plus anciennes &raquo;{{ end }}
+    <BR>&nbsp;</FONT></TD>
+    <TD WIDTH=8><IMG HEIGHT=1 WIDTH=8 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>
+{{ end }}
