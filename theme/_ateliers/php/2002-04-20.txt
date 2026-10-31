@@ -1,0 +1,541 @@
+Atelier PHP #3 - Samedi 20 Avril 2002
+ 'prof': bofh [veins@skreel.org]
+
+
+[15:13] <bofh>	quelqu'un a essayé de faire les exos de la semaine dernière ?
+[15:13] <Lacteus> oui
+[15:13] <bofh>	et ca donne ?
+[15:13] <bofh>	personne n'a eut de mal ?
+[15:13] <Lacteus> oué c trankil
+[15:14] <Lacteus> bah non, personnellement
+[15:14] <bofh>	ok
+
+
+ Pour ceux qui n'ont pas compris le premier exo, il s'agissait d'un script qui
+ comptait le nombre de fois ou un lien etait suivi. Pour cela, il passait une
+ variable qu'il incrementait de 1 a chaque execution du script. Rien de bien
+ savant  :)
+
+
+ Exo 2. Correction.
+	<?
+	   if ($_POST['chaine'] == "")
+	   {
+	?>
+	  <form action="script.php" method="post">
+	  <input type="text"   name="chaine">
+	  <input type="submit" value="envoyer">
+	  </form>
+	<? }
+	   else
+	   {
+	     echo "<BR>". $_POST['chaine'];	    /* on affiche la chaine et on passe */
+						    /* a la ligne.			*/
+	     echo "<BR>". strlen($_POST['chaine']); /* on affiche la taille de la	*/
+						    /* et on passe a la ligne.		*/
+	    /* enfin, on affiche la chaine caractere par caractere, ligne par ligne.	*/
+
+	     for ( $i=0 ; $i<strlen($_POST['chaine']) ; $i=$i+1 )
+	       echo "<BR>". $_POST['chaine'][$i];
+	   }
+	?>
+
+
+ Aujourd'hui on va voir plein de choses, a la fin de cet atelier vous serez en
+ mesure de faire vos premiers VRAI scripts, ceux que vous pourrez utiliser sur
+ vos sites  :)
+ On va voir dans un premier temps ce que sont les variables d'environnement:
+ a quoi elles servent et comment vous pouvez en tirer avantage, ensuite on va
+ voir ce que sont les descripteurs de fichiers (c'est ce qui va vous permettre
+ des cet atelier de manipuler des fichiers), et a l'avenir de manipuler des
+ connexions a mysql, postgresql, ou tout autre type de connexions
+
+ On verra aussi pourquoi Skreel utilise le safe_mode, en quoi cela peut vous
+ rendre service, et vous permettre de faire de meilleurs scripts qui seront
+ compatibles non seulement sur skreel, mais aussi sur grand nombre d'hébergeurs
+
+ On terminera par nos premières manipulation de fichiers, on ouvrira un fichier
+ pour y lire et y écrire
+
+
+[15:18] <bofh>	des questions ?
+[15:18] <silken> non
+[15:18] <GreyMage> nope
+[15:18] <kirtap> le safe_mode, c'est quoi ?
+[15:18] <bofh>	kirtap: on verra ca justement  ;)
+[15:18] <kirtap> ok
+[15:19] <bofh>	petit truc que j'ai oublié dans le support de cours
+[15:19] <bofh>	je vais a chaques fois introduire des nouveaux termes
+[15:19] <bofh>	et mettre leur équivalent en anglais
+[15:19] <bofh>	la raison est simple, déjà la doc en anglais sur le net
+		est plus simple à trouver et souvent bien meilleure
+[15:19] <bofh>	la seconde est que même en francais, beaucoup de personnes
+		utilisent les termes anglais
+
+
+ Commencons par les variables d'environnement:
+
+** Variables d'environnements - (environnement variables [env vars.])
+
+ On a vu diverses sources de provenance pour les variables la derniere fois.
+ Il est une source qui est tres souvent utilisee et qui va vous permettre de faire
+ des scripts qui soient vraiment "pro".
+ Les variables d'environnements sont des variables que le serveur web
+ (Apache, IIS, Pws...) mets a disposition de vos scripts PHP. Par exemple, vous
+ pouvez recuperer l'adresse IP du visiteur, le numero de version du serveur, de PHP,
+ le nom du fichier, etc...
+
+ On accede a ces variables en utilisant le tableau $_SERVER[]
+ par exemple, pour afficher l'adresse IP du visiteur
+
+	<? echo $_SERVER['REMOTE_ADDR']; ?>
+
+ Quelle est l'utilite ? Et bien, comme ces variables sont crees par le serveur
+ lui meme, vous n'avez pas a en tester les valeurs, elles sont "sures". Elles
+ vous permettent donc de faire des scripts bien plus propres.
+
+ Reprenons l'exo 2.
+ Notre formulaire envoies les donnees au script "script.php". Que ce passe t'il
+ si l'on renommes ce script ? Et bien, on doit le modifier. Sur un script ca va,
+ quand un site contient des centaines de scripts, vous voila parti pour un bon
+ moment de detente avec votre editeur de texte  :)
+
+ C'est la que les variables d'environnement prennent leur importance. Dans cet exemple,
+ si nous avions utilise la variable $_SERVER['PHP_SELF'] a la place de "script.php",
+ alors notre script serait automatiquement mis a jour, car cette variable est remplacee
+ par le nom du script a l'execution.
+ Des variables d'environnement, il en existe quelques dizaines qui vous seront vraiment
+ utiles. A la fin de cet atelier je vous en donnerais quelques noms pour que vous
+ commenciez a vous amuser avec.
+
+
+[15:23] <bofh>	questions ?
+[15:23] <Lacteus> ça a un rapport avec $_GET ?
+[15:23] <GreyMage> heu oui c koi exactement $_SERVER['PHP_SELF'] ?
+[15:24] <bofh>	Lacteus
+[15:24] <bofh>	ca n'a pas de rapport avec $_GET[] mais comme expliqué dans
+		un précédent atelier, on récupère les variables de la même manière
+[15:24] <Lacteus> ok
+[15:24] <bofh>	si tu sais utiliser $_GET[] alors tu arrives a utiliser $_SERVER
+[15:24] <Lacteus> ok je vois, j'ai compris =)
+[15:25] <GreyMage> je recible la question, c koi le PHP_SELF plutot :)
+[15:25] <bofh>	Grey:  PHP_SELF est une variable d'environnement qui contient le
+		nom du script qui est executé
+[15:25] <GreyMage> ooohh
+[15:25] <bofh>	imaginons que tu ais un script qui s'appelle 'toto.php'
+[15:25] <bofh>	si tu as dedans:  <? echo $_SERVER['PHP_SELF']; ?>
+[15:25] <bofh>	il va t'afficher:  /toto.php
+[15:26] <bofh>	le chemin complet vers le script et le script lui meme
+[15:26] <GreyMage> ah ok
+[15:26] <silken> on peut pas mettre $REMOTE_ADDR directement ?
+[15:26] <bofh>	silken: nan $REMOTE_ADDR est une syntaxe qui va etre supprimée par
+		PHP à l'avenir
+[15:26] <silken> ok
+[15:26] <bofh>	c'est expliqué au bas de la faq de skreel
+[15:26] <GreyMage> et si je met en lien et que je clique dessus, ca rafraichit
+		la page alors ?
+[15:26] <bofh>	grey: oui  :)
+[15:26] <GreyMage> c cool ca :)
+[15:26] <bofh>	l'avantage en fait, c'est que si tu renommes le script
+[15:27] <bofh>	tu n'as pas a modifier les liens vers ce fichier dans le script lui meme
+[15:27] <bofh>	vu que le serveur web te metteras automatiquement a jour le nom du fichier
+		dans la variable
+[15:27] <bofh> le reste est clair ?
+[15:27] <GreyMage> oui c bon
+[15:28] <silken> oui
+[15:28] <bofh>	ok
+
+
+** Descripteurs de fichiers - (file descriptors)
+
+ Pour faire les exos de cet atelier, il faut comprendre ce qu'est un "file descriptor".
+ Quand vous ouvrez un fichier, le systeme ne manipule pas le fichier directement,
+ mais un numero qui lui est attribue. C'est le descripteur de fichier.
+
+ Quand on voudra ecrire dans le fichier, on ecrira 'dans' ce numero et PHP saura de
+ lui meme quel fichier est associe a ce numero.
+ Accessoirement, ce numero nous permettera de tester si le fichier a été correctement
+ ouvert ou non, et donc de ne pas ecrire dedans en cas d'erreur. La gestion d'erreur
+ est ce qui distingue les scripts proprement ecrits des scripts de debutants.
+
+ Vous preferez qu'un internaute voit un message du genre :
+
+   'desole, petit probleme technique, reessayez plus tard ;)'
+
+ ou :
+
+   Warning: Unable to access coool.txt in /home/www_skreel/membres/toad/skreel/skreel-php/error.php on line 2
+   Warning: fopen("coool.txt", "r") - No such file or directory in /home/www_skreel/membres/toad/skreel/skreel-php/error.php on line 2
+   Warning: fopen("coool.txt", "w") - Permission denied in /home/www_skreel/membres/toad/skreel/skreel-php/error.php on line 4
+   Warning: Unable to access coool.txt in /home/www_skreel/membres/toad/skreel/skreel-php/error.php on line 6
+   Warning: fopen("coool.txt", "r+") - No such file or directory in /home/www_skreel/membres/toad/skreel/skreel-php/
+
+
+ Contrairement a ce que l'on pourrait croire, les descripteurs de fichiers ne
+ s'appliquent pas qu'aux fichiers, mais egalement aux connexions a mysql, ou a un
+ autre serveur de bases de donnees.
+ En fait, je viens de vous mentir pour la "bonne cause", car en realite meme les
+ connexions sont des fichiers, mais ca vous n'avez pas besoin de le comprendre, ce
+ n'est pas important pour vous  :)
+
+
+[15:30] <bofh>	questieunes ?
+[15:31] <GreyMage> heu..
+[15:31] <GreyMage> ouais ?
+[15:31] <GreyMage> donc en fait le n° c'est un fichier qui porte comme nom ce numéro ?
+[15:31] <bofh>	non
+[15:31] <GreyMage> zut loupé :)
+[15:31] <bofh>	imagines une liste
+[15:32] <bofh>	chaque script commence avec une liste a lui
+[15:32] <bofh>	quand tu ouvres un fichier, il ajoute un numero a cette liste
+[15:32] <bofh>	et quand tu ecrit 'dans' ce numero, le script fait la relation en
+		utilisant la liste
+[15:34] <asphro> oki
+[15:34] <bofh>	d'autres points a éclaircir ?
+[15:34] <silken> nan
+[15:34] <GreyMage> nan vas y
+[15:34] <bofh>	ok
+
+
+ On va maintenant voir le safe_mode :
+
+** Safe_mode
+
+ Comme vous avez pu le voir, Skreel utilise le safe_mode. Cela vous impose quelques
+ de restrictions, mais qui sont la pour assurer la securite de vos comptes.
+ A priori, c'est chiant, mais il y a un bon cote a cela (et oui, faut bien :p).
+
+ Quand vous developpez un script chez vous, ce dernier est compatible chez vous
+ mais pas forcement chez les autres. Quand vous developpez un script chez nous,
+ le safe_mode vous force a travailler avec des restrictions.
+
+ Ces restrictions font que vos scripts peuvent fonctionner sur a peu pres tout les
+ hebergeurs car etant donne qu'ils fonctionnent probablement avec moins de restrictions,
+ vous n'aurez aucun probleme a les installer. Si je vous dit cela, ce n'est pas pour
+ faire la pub de Skreel (vous etes deja membres :p), mais pour vous montrer un point
+ tres important.
+
+ Nous (admins) avons la possibilite de travailler sans le safe_mode pour notre propre
+ site, cela aurait rendu la tache beaucoup plus simple. Vous n'imaginez probablement pas
+ ce que nos scripts ont besoin de faire, mais ne peuvent pas faire à cause de ce mode :)
+ Mais le fait que ayons reussi à faire notre site comme nous le voulions, prouve
+ qu'il est possible de realiser à peu de choses près TOUT ce que l'on veut dans ce mode
+ et nous vous conseillons par consequent de TOUJOURS travailler avec ces restrictions.
+
+
+[15:37] <bofh>	vous connaissez un peu les restrictions du safe_mode ?
+[15:37] <asphro> oui
+[15:37] <Lacteus> voui
+[15:37] <bofh>	bien  :)
+[15:37] <GreyMage> lol
+[15:37] <GreyMage> non :)
+[15:37] <Lacteus> merci skreel =)
+[15:37] <bofh>	:p
+[15:37] <bofh>	maintenant qu'on a vu les descripteurs de fichiers
+[15:38] <bofh>	on va pouvoir attaquer ce qui va vous permettre de commencer
+		à faire de vrais scripts
+[15:38] <bofh>	je ne vais pas vous apprendre a faire des scripts
+[15:38] <bofh>	mais vous apprendre les bases pour que vous les realisiez vous meme
+[15:38] <bofh>	apres, seule votre imagination sera une limite  :)
+[15:38] <silken> comment peut on installer le safe_mode en local ?
+[15:38] <asphro> c dans php.ini
+[15:38] <Lacteus> oué
+[15:38] <asphro> faut mettre safe mode on
+[15:38] <Lacteus> safe_mode = true
+[15:38] <bofh>	silken: oui safe_mode
+[15:39] <bofh>	dans php.ini
+[15:39] <silken> ok
+
+
+** Ecriture et lecture dans un fichier ( File input/output [file i/o])
+ [ http://www.php.net/manual/fr/ref.filesystem.php ]
+
+ Nous allons aujourd'hui apprendre comment faire pour lire et ecrire dans un
+ fichier, cela va nous permettre de realiser les exos a la fin de l'atelier,
+ et aussi vous permettre de realiser vos premiers VRAI scripts  :)
+
+ On va tout d'abord deposer dans son propre compte, par ftp, un fichier texte
+ car le safe_mode ne nous permet pas de le creer depuis PHP.
+ Une fois ce fichier en ligne, vous pouvez l'ouvrir, le lire, y ecrire, le fermer
+ sans aucun probleme.
+
+ Vous allez lui attribuer le chmod 606. Vous pouvez faire cela à l'aide de la
+ fonction 'chmod' de php, ou depuis votre client FTP.
+ Je ne vais pas vous expliquer le fonctionnement de chmod, car cela a deja ete
+ faire lors du premier atelier Unix et que l'aide complete est disponible sur
+ le site de PHP.
+ [ n.d.k`: http://www.php.net/manual/fr/function.chmod.php ]
+
+ Une fois cela fait, etudions un premier script:
+
+	<?
+	   $fd = fopen("fichier.txt", "r");	/* on ouvre le fichier en lecture */
+						/* $fd contient le descripteur.   */
+	   if (!$fd)
+	     echo "je n'ai pas pu ouvrir le fichier en lecture !";
+	   else
+	   {
+	     echo "fichier ouvert !";
+	     fclose($fd);			/* fermeture dee descripteur	  */
+	   }
+	?>
+
+ Le prototype minimal de fopen est:  int  fopen(string filename, string mode);
+ En lisant la documentation [ http://www.php.net/manual/fr/function.fopen.php ]
+ sur www.php.net on apprends qu'en cas d'echec cette fonction renvoit "FALSE"
+ (FALSE est egal a 0).
+
+ string mode correspond au mode d'ouverture:
+  r - lecture (read)
+  w - ecriture (write)
+  a - ajout (append)
+ Il y a d'autres modes mais nous ne les utiliserons pas encore.
+
+ En francais le precedent script revient donc a dire:
+
+   ouvre le fichier "fichier.txt" en lecture.
+   Si le fichier n'est pas ouvert correctement
+     alors affiche un message d'erreur,
+   sinon
+     affiche un message pour dire que c'est bon,
+     et ferme le fichier.
+
+
+ fclose a le prototype suivant:  bool fclose(int fd);
+ [ http://www.php.net/manual/fr/function.fclose.php ]
+
+ bool signifie 'boolean' (booléen). Une variable booléene ne peut prendre que
+ deux valeurs: true (vrai) ou false (faux)
+
+ Il y a une equivalence entre variables de type 'bool' et de type 'int'.
+   FALSE <=> 0
+   TRUE  <=> 'tout le reste'
+
+ Si un fichier a correctement ete ouvert, fclose le fermera toujours sans
+ probleme, On a donc pas besoin de tester si il est bien fermé, car on a deja
+ testé s'il etait bien ouvert.
+ C'est bien, on a ouvert un fichier mais on n'a encore rien ecrit dedans, et on
+ a rien lu dedans, donc cela n'a pas beaucoup d'utilite  :)
+
+[15:42] <bofh>	questieunz ?
+[15:43] <silken> non
+[15:43] <GreyMage> si le fopen peut renvoyé False, alors c un bool pas un int non ?
+[15:43] <bofh>	oui et non
+[15:43] <bofh>	en fait FALSE est egal a 0
+[15:43] <bofh>	et TRUE a tout le reste
+[15:43] <bofh>	fopen renvoies un descripteur de fichier ou 0 dans le cas ou il echoue
+[15:43] <GreyMage> ah oui merde
+[15:43] <asphro> ca existe les boolean en php ?
+[15:43] <GreyMage> sry question idiote :)
+[15:43] <bofh>	par conséquent on peut l'utiliser comme un bool
+[15:44] <bofh>	asphro oui
+[15:44] <bofh>	quand on fait:  if (!$fd)
+[15:44] <bofh>	on le teste a la maniere d'un boolean
+[15:44] <bofh>	(si ce n'est pas bon)
+[15:44] <bofh>	un peu comme si on avait fait  if (FALSE)
+[15:44] <T0aD>	GreyMage: il n y a pas de question idiote, juste des idiots
+		- comme dirait l autre :)
+[15:45] <GreyMage> mais y'a pas de type boolean comme en C ou en Pascal, en php ?
+[15:45] <bofh>	grey: le type boolean en C est fait de la meme maniere
+[15:45] <bofh>	mais il existe un type booleen
+[15:45] <bofh>	comme l'indique le prototype de fclose
+[15:45] <bofh>	tu peux faire des tests avec  TRUE et FALSE
+[15:46] <bofh>	d'autres questions ?
+[15:47] <bofh>	ok, reprenons donc  :)
+
+ n.d.k`: le type booleen en langage C n'est qu'un ajout "recent",
+	pour ajouter une certaine 'propreté', mais generalement
+	on utilise les equivalences avec les types numeriques
+	  faux == zero
+	  vrai != zero
+
+
+ Pour ecrire, on peut utiliser les fonctions fputs ou fwrite
+   fputs  prototype:  int fputs (int fp, string str);
+   fwrite prototype:  int fwrite (int fp, string string);
+ [ http://www.php.net/manual/fr/function.fputs.php
+   http://www.php.net/manual/fr/function.fwrite.php ]
+
+ Ces deux fonctions sont strictement identiques, la documentation de fputs
+ renvoie a celle de fwrite (qui est plus consistante).
+ 
+ n.d.k` : pourquoi deux fonctions ?
+	 fwrite est plutot utilisé pour une ecriture en mode binaire
+	 qu'est ce que le mode "binaire" ? il n'est pas important de le
+	 savoir pour le moment; utilisez fputs :p
+
+ Reprenons le precedent script:
+
+	<?
+	   $fp = fopen("fichier.txt", "w");	/* on ouvre en ecriture cette fois */
+	   if (!$fp)
+	     echo "probleme d'ouverture du fichier !";
+	   else
+	   {
+	     fputs($fp, "test");	/* le premier argument est le descripteur  */
+	     fclose($fp);
+	   }
+	?>
+
+ Ce script va ecrire le mot "test" dans le fichier. On n'a pas utilise la valeur de
+ retour de fputs (le 'int' du prototype) pour simplifier l'exemple mais on AURAIT DU :)
+
+ Cette fonction renvoie le nombre de caracteres ecrits, on aurait eut qu'a comparer
+ cette valeur avec le nombre de caracteres qu'on voulait ecrire [ strlen("test"); ]
+ pour tester si tout s'est bien deroulé :)
+
+ On aurait aussi bien pu remplacer "test" par une variable contenant un autre
+ texte ce qui aurait permit de le rendre dynamique. En ecriture, la difference
+ entre le mode 'w' et 'a' se situe dans le fait que le premier mode efface le
+ contenu du fichier alors que le second se place a la fin.
+
+
+ La lecture se fait à l'aide de la fonction fgets qui possede le prototype
+ suivant:  string fgets(int fp [, int length]);
+ [ http://www.php.net/manual/fr/function.fgets.php ]
+
+ Cette fonction lit dans le descripteur $fp:
+  - soit tout les caracteres jusqu'au premier saut de ligne ou la fin du fichier
+   (le premier cas qui arrive).
+  - soit jusqu'a $length caracteres si vous avez specifie cet argument.
+
+	<?
+	   $fp = fopen("fichier.txt", "r");
+	   if (!$fp)
+	     echo "probleme d'ouverture du fichier !";
+	   else
+	   {
+	     echo fgets($fp);
+	     fclose($fp);
+	   }
+	?>
+
+ Ce script va lire la premiere ligne de $fp, comme on a ecrit "test" tout a
+ l'heure, ca va forcement afficher "test"  :)
+ Si on veut lire tout le fichier, deux solutions s'offrent a nous.
+  - soit on donne en second argument le nombre de caracteres de ce fichier
+  - soit on fait une boucle comme on en a vu dans l'atelier 1.
+
+ la seconde solution est plus interessante, car flexible (il n'est pas
+ necessaire de connaitre la taille du fichier a lire) :)
+
+	while ($ligne = fgets($fp))
+	  echo $ligne;
+
+ avant que vous posiez vos questions, on va regarder l'exemple
+   while ($ligne = fgets($fp))
+ c'est un exemple de 'booleen'
+
+ Quand on va arriver a la fin du fichier, fgets() ne pourra plus lire dedans
+ et renverras donc zero, et comme on a vu que 0 == FALSE, la condition de la
+ boucle n'est plus verifiée, la boucle s'arrete; magique non ?  :)
+
+
+[15:51] <bofh>	si vous avez des questions c'est le moment  :)
+[15:51] <GreyMage> comment il sait qu'il doit chaque fois passé a la ligne suivante
+[15:51] <GreyMage> paske la on dirait plus une boucle infine ou il lirait chaque fois
+		la première ligne
+[15:51] <bofh>	grey: tant qu'on a pas fermé le fichier
+[15:52] <bofh>	le curseur ne revient pas au debut du fichier
+[15:52] <bofh>	donc si on lit 1 caractere
+[15:52] <bofh>	le curseur aura avancé de 1
+[15:52] <bofh>	pour la prochaine lecture
+[15:52] <GreyMage> et c la meme choses pour mysql alors quand on utilise fetch_array
+		par exemple ?
+[15:52] <bofh>	grey: exactement
+[15:52] <GreyMage> c magique :)
+[15:52] <Lacteus> kler
+
+[15:53] <bofh>	quand une fonction te remets en debut de fichier a chaque
+		appel sur le meme descripteur 
+[15:53] <bofh>	c'est TOUJOURS indiqué dans la documentation
+[15:53] <bofh>	car c'est un comportement anormal
+[15:54] <bofh>	bien
+[15:54] <bofh>	d'autres questions ?
+[15:54] <GreyMage> nope
+[15:54] <bofh>	je vais terminer par deux petites astuces
+[15:54] <bofh>	et deux exos  ;)
+
+
+ Pour aller a la ligne dans un fichier texte on ecrit le caractere \n (backslash n).
+ Pour coller deux chaines on peut mettre un point. Exemple:
+
+	echo "toto"."toto";
+
+ ecrira
+
+ 	totototo
+
+ Ca marche aussi avec les variables:
+
+	echo $toto.$tata;
+	echo $toto ."toto";
+	echo $toto ." a rendez-vous avec ". $tata;
+
+ c'est de la 'concatenation de chaines de caracteres'
+
+
+ Exo 1,
+
+  Ecrivez un compteur utilisant un fichier texte. Le script afficheras un
+  message d'erreur s'il n'arrive pas a ouvrir le fichier.
+  S'il y arrive, il en lira le contenu, si ce contenu est vide il y mettra
+  le chiffre '0', sinon il incrementera ce chiffre.
+
+  c.a.d, au debut le fichier est vide, puis il contient '0', puis '1', '2' etc...
+  ne faites pas de boucle, a moins d'en fixer le nombre de tours pour eviter
+  les boucles infinies :p
+
+
+ Exo 2,
+
+  Ecrivez un mini chat.
+  Il ne sera composé que d'un fichier texte, minichat.txt, et d'un seul
+  script, avec un formulaire POST.
+
+	<FORM ACTION="???" METHOD=POST>  ( "???" est a remplacer ;)
+	  <INPUT TYPE=TEXT   NAME="entree">
+	  <INPUT TYPE=SUBMIT VALUE="envoyer">
+	</FORM>
+
+  A chaque fois que l'on enverra ce formulaire, si le champ texte n'est pas vide,
+  alors ce contenu de ce champ sera ecrit _a la fin_ du fichier texte, et le
+  contenu du fichier texte devra etre affiché par le script
+  (sans utiliser include ou require, on n'est pas encore a ce cours la :)
+
+  C'est un chat TRES simple, ne gerez pas de pseudos ni autre options particulieres :)
+
+
+[15:56] <bofh>	des questions sur les exos ?
+[15:56] <Lacteus> nop
+[15:56] <GreyMage> heu les php chat qu'on peut voir sur le net, c comme
+		l'exercice 2 en plus poussé ?
+[15:56] <GreyMage> :)
+[15:56] <bofh>	grey: ca depends
+[15:56] <bofh>	il y en a qui utilisent des fichiers textes
+[15:56] <bofh>	d'autres des bases de données
+[15:56] <bofh>	mais c'est le meme principe  :)
+[15:57] <bofh>	comme je l'ai dit tout a l'heure
+[15:57] <GreyMage> oky :)
+[15:57] <bofh>	apres ce n'est qu'une question d'imagination et d'astuce  :)
+[15:57] <bofh>	bon, on va donc cloturer ce troisième atelier si personne n'as de questions
+[15:57] <bofh>	(hallucinant, cette semaine j'ai fini dans les temps  ;p)
+[15:57] <TheXorX> lol
+[16:00] <kirtap> Merci pour ce cours ; j'ai beaucoup apprecie
+[16:00] <kirtap> je vais le travailler cette semaine
+[16:00] <Lacteus> moi aussi =)
+[16:15] <bofh>	<OUPS>
+[16:15] <bofh>	j'ai oublié un truc  :)
+[16:15] <bofh>	http://www.skreel.org/info.php
+[16:15] <bofh>	toutes les variables d'environnement sont dans la partie Apache Environnement
+[16:15] <bofh>	j'en reparlerais la prochaine fois pour les absents
+[16:16] <Lacteus> on peut se le faire tout seul ce fichier
+[16:16] <Lacteus> avec <? info ?> ou un truc dans le genre, non ?
+[16:16] <bofh>	pas sur skreel
+[16:16] <bofh>	mais en général:  phpinfo()
+[16:16] <bofh>	nous on vous le fournit, donc z'avez pas besoin de le faire
+[16:16] <Lacteus> oué, merci, c plus rapide =)
+[16:17] <bofh>	avec ce que t'as appris aujourd'hui, tu peux l'ouvrir et le lire  ;p
+
+ n.d.k` : par contre pour le 'parser' (c.a.d. recuperer les informations exploitables
+	par un script) c'est une autre paire de manches :p

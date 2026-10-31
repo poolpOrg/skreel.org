@@ -1,0 +1,562 @@
+Atelier UNIX #4 - Samedi 11 Mai 2002
+ 'prof': veins [veins@skreel.org]
+
+
+[16:33] <veins> allez hop  :)
+
+ Je vais vous avouer un truc, les ateliers sont ecrits en general relativement
+ tard (entre 3 heures et 4 heures du matin la veille). L'atelier Unix est tres
+ dur a ecrire compare a celui sur PHP car il est beaucoup plus vaste et traite
+ d'un domaine bien plus complique.
+ J'ai eut donc enormement de mal a savoir par ou commencer et de quoi traiter,
+ mais par un hasard, l'un de mes projets scolaires est la realisation de A a Z
+ d'un shell complet. J'ai donc eut a rediger de la doc et a "exploser" le proj
+ en diverses parties, le bon cote c'est que maintenant je sais comment pouvoir
+ vous presenter le shell en plusieurs parties distincte et surtout l'ordre dans
+ lequel les parties vous seront presentees.
+
+ Pas d'inquietude, tout ce qui a ete dit lors des precedents ateliers n'est pas
+ a revoir, la seule difference c'est que les ateliers seront un peu mieux mis
+ en place et un peu mieux structure :)
+ Il y a un aspect des ateliers qui va changer car je m'appercoit que ca va etre
+ super necessaire a plusieurs reprises. En effet, Unix est etroitement lie a
+ deux languages sur lesquels reposent entierement le systeme. Je ferais donc de
+ temps a autre allusion a ces languages que sont le language shell et le C.
+
+ J'avais un peu peur de parler du C du fait que je n'ai pas un niveau excellent
+ mais je m'appercoit qu'en realite cela n'a pas beaucoup d'importance, car bien
+ que je n'ai pas le niveau d'un developpeur kernel, j'ai quand meme celui de
+ vous expliquer comment certaines choses marchent en interne. Ne vous inquietez
+ cependant pas, ce n'est pas un atelier de C ou de language Shell, les allusions
+ serviront uniquement de reference donc meme si vous ne connaissez ni l'un, ni
+ l'autre de ces languages, vous serez en mesure de suivre les ateliers  ;)
+ Commencons tout de suite.
+
+
+  Les differents types de commandes
+ ===
+
+ On avait vu quelques commandes jusqu'a maintenant. On sait comment se deplacer
+ dans des repertoires, en creer ou encore en supprimer. Il y a un aspect qui ne
+ vous a peut etre pas encore saute aux yeux, mais faites une recherche du
+ binaire 'cd':
+
+	$ which cd
+	 cd: Command not found.
+	$
+
+ ('which' est une commande qui recherche un binaire dans notre PATH)
+ Et pourtant la commande 'cd' fonctionne...
+ En fait, le shell dispose de ce que l'on appelle des commandes 'builtins'. Il
+ s'agit de commandes qui font partie integrante du shell et qui n'ont donc pas
+ d'existence dans le systeme de fichier (pas de "d'executable dedié").
+ Parmi ces commandes, on a donc 'cd', mais aussi 'history' (qui affiche la liste
+ des commandes que vous avez tappe depuis que vous vous etes loggue). Il y en a
+ pleins d'autres dont on n'a pas une utilite absolue maintenant.
+ On distingue donc deux types de commandes, les executables et les builtins. Un
+ executable peut aussi bien etre du code compile que du script interprete, du
+ moment que chmod en fait un executable.
+
+
+[16:37] <veins>	des questions ?
+[16:37] <Jeanb>	non
+[16:37] <veins>	ok
+[16:37] <Hadoms> non
+[16:37] <veins>	il faut savoir que la commande 'logout', ou 'exit' de vos shells
+[16:37] <veins>	est elle aussi un builtin
+[16:37] <Jeanb>	oki
+[16:38] <veins>	aujourd'hui on va voir differentes choses
+[16:38] <veins>	tout d'abord le quoting
+[16:38] <veins>	qui est une syntaxe qui permets au shell de manipuler la
+		ligne de commande
+[16:38] <veins>	on va voir comment le shell manipule cette ligne de commande
+[16:38] <veins>	et ce qui se passe a l'execution
+[16:38] <veins>	ok ?
+[16:38] <Mouch0ir> ui
+[16:38] <Jeanb>	oui
+[16:38] <skink>	ok
+
+
+  Le Quoting
+ ===
+
+ Le quoting est bien pratique. Voyons un peu comment fonctionne le shell:
+
+	$ echo toto va a la plage
+	 toto va a la plage
+	$
+
+ Dans cet exemple, le shell va transmettre a 'echo' 5 arguments. C'est pour cela
+ que si l'on mets plusieurs espaces:
+
+	$ echo toto   va    a la    plage
+	 toto va a la plage
+	$
+
+ il va les "manger". Il affichera la liste des arguments et les espaces etant
+ consideres comme des "delimiteurs" d'arguments, il ne les prendra pas en compte.
+ Pour pallier ce probleme [ n.d.k` : GRRR combien de fois faudra t il le repetter ?,
+  pallier est un verbe transitif DIRECT, on "pallie un problème", pas "à un problème" ],
+ on a mis en place un systeme nomme le 'quoting' :
+
+	$ echo "toto  va  a la  plage"
+	 toto  va  a la  plage
+	$
+
+ Le shell a considere toute la chaine comme un seul et unique argument. En C, le
+ premier exemple (sans utilisation du 'quoting') revient à:
+   argv[1] == toto, argv[2] == va, etc...
+ alors que le second :
+   argv[1] == "toto  va  a la  plage"
+ La syntaxe du quoting peut differer selon les shells, ici on etudiera celle de
+ l'ensemble des shells de type 'bourne' (sh, bash, ksh, pdksh...)
+
+ Les apostrophes, ou guillemet simple, (') delimitent une chaine et enlevent tout
+ sens aux meta caracteres ( *?>< on a vu cela la derniere fois).
+
+	$ echo '>> $toto'
+	 $toto
+	$
+
+ On peut donc utiliser les apostrophes quand on ne veut pas que le shell prenne
+ la peine d'interpreter le contenu d'une commande.
+ Les guillemets double (") delimitent une chaine mais, au contraire, permettent
+ les "substitutions" ('$toto' est une variable):
+
+	$ toto="houhou"
+	$ echo ">> $toto"
+	 >> houhou
+	$
+
+ On peut donc les utiliser quand on veut manipuler des variables.
+ Les back quotes, Alt Gr+7, (`) delimitent une partie à executer.
+
+	$ echo `uname`
+	 OpenBSD
+	$
+
+ `uname` a été remplacé par son "resultat" avant que la commande 'echo' ne fasse
+ son travail. Ca va nous permettre de voir qu'il y a des priorites lorsque le shell
+ va analyser la comande a executer.
+
+ Tout d'abord, quand on manipule des arguments, on doit reflechir a quel type
+ de quoting utiliser.
+ pour afficher 'toto', utiliser des guillemets ou des apostrophes n'a aucune
+ importance, mais pour afficher un autre caractere de quoting ou un meta caractere,
+ c'est different:
+
+	$ echo """
+	 > ^C
+	$
+
+ comme vous pouvez le voir, le shell ne comprends pas ce qui se passe parcequ'il
+ voit un "" (ouverture/fermeture) puis un " (ouverture), et donc il attend que
+ la commande se termine sans rendre la main (d'où le Ctrl-C forcant le retour)
+ Comment faire pour afficher un guillemet dans le shell alors ?
+ Deux methodes:
+
+	$ echo "\""
+	 "
+	$ echo '"'
+	 "
+	$
+
+ La premiere utilise le caractere backslash pour "proteger" le guillemet, cad lui faire
+ perdre son sens de signe de quoting, ainsi le shell le considere comme un caractere
+ affichable.
+ La seconde methode utilise le guillemet simple (') comme signe de quoting, ce qui a le
+ meme effet que le backslash.
+ Pour savoir quel type de quoting utiliser, il faut s'entrainer pour avoir l'habitude :)
+ Utiliser correctement un shell s'apprend avec le temps et les essais
+
+
+[16:43] <veins>	des questions ?
+[16:43] <skink>	nop
+[16:43] <Hadoms> nop
+[16:43] <veins>	ok
+[16:43] <Jeanb>	non, ça ressemble o php ça
+[16:43] <Hadoms> oui
+[16:43] <veins>	quand j'ai tappé  `uname`
+[16:43] <veins>	je n'ai pas donné le sens de cette commande
+[16:44] <veins>	quand vous ne connaissez pas une commande
+[16:44] <veins>	apprennez a lire la page de manuel s'y consacrant
+[16:44] <Jeanb>	man
+[16:44] <veins>	on y apprends que 'uname' permets d'avoir des informations
+		sur la machine (os, processeur, versions...)
+[16:44] <veins>	et que sans arguments elle affiche l'os
+[16:44] <veins>	(ici OpenBSD)
+[16:44] <veins>	ok ?
+[16:44] <Hadoms> ok
+
+
+  Variables
+ ===
+
+ Le shell dispose de deux types de variables, les variables 'builtins' et les variables
+ d'environnement. Les variables d'environnement fonctionnent de la meme maniere que
+ sur les autres softs, elles sont transmises au soft lors de son execution par le soft
+ qui l'a execute (c'est le troisieme argument de la fonction execve()).
+
+ Les variables 'builtins' sont des variables qui sont limitees au shell et qui
+ ne sont pas transmises par l'environnement. Techniquement, elles sont gerees
+ par une liste chainee (si vous comprenez pas, ca n'a pas d'importance), et elles
+ sont ecrasees par les variables d'environnement dans le sens que la creation d'une
+ variable d'environnement du meme nom qu'une variable 'builtin' efface automatiquement
+ la variable 'builtin'.
+
+ Le shell manipule les variables d'environnement à diverses reprises, par exemple
+ lorsqu'il vous affiche le prompt ou votre login. Les variables 'builtin' ne sont
+ utilisees qu'à un moment, lors de l'expansion de la commande.
+
+ Voyons ce qu'est l'expansion de la commande.
+ Les variables 'builtin' ne sont pas conservees, elles "meurent" lorsque vous
+ sortez du shell et ne sont jamais transmises aux autres processus que votre
+ shell cree (fork()) lors de l'execution de commandes.
+
+ Pour illustrer cela on peut voir un truc tres simple; Imaginez que vous ecriviez
+ un shell script ressemblant a cela:
+
+	#! /bin/sh
+	 echo $PS1
+	 exit 0
+
+ Dans ce script shell on ne declare aucune variable, cependant il arrivera à
+ afficher '$PS1' car c'est une variable d'environnement de votre shell transmise
+ à l'execution.
+ Par contre, si vous creez une variable builtin 'toto' et que vous essayez de
+ l'afficher depuis votre script shell
+
+	$ toto="titi"
+	$ cat script.sh
+	 #! /bin/sh
+	 echo $toto
+	 exit 0
+	$ ./script.sh
+	$
+
+ il n'affichera rien
+
+
+[16:48] <veins>	des questions ?
+[16:48] <Jeanb>	comment on cré une variable builtin toto ?
+[16:48] <veins>	$ toto="toto"
+[16:48] <Jeanb>	ah oki
+[16:48] <veins>	la seule difference entre une variable builtin et une variable d'environnement
+[16:49] <veins>	est que la variable d'environnement est "exportee" apres
+[16:49] <veins>	exemple:
+[16:49] <veins>	$ toto="toto"
+[16:49] <veins>	variable builtin
+[16:49] <veins>	$ export toto
+[16:49] <veins>	'$toto' devient une variable d'environnement
+[16:49] <Jeanb>	oki
+[16:50] <Hadoms> ok
+[16:50] <veins>	comme on va le voir tout a l'heure
+[16:50] <veins>	l'environnement est plus ou moins "hereditaire"  :)
+[16:50] <Jeanb> oki
+
+
+  Aliases
+ ===
+
+ Les aliases sont un mecanisme destiné à vous simplifier la tache, generalement en
+ tappant moins de caracteres au clavier.
+ Un alias permet de remplacer une commande par une autre de la meme maniere que
+ les variables (toujours gere par une liste chainee, toujours temporaires).
+
+ Par exemple, imaginons que j'ai a saisir plusieurs fois la commande 'uname';
+ Au bout d'un moment, j'en ai marre de tapper cette commande en entier.
+ Je decide de faire un alias:
+
+	$ alias un='uname'
+	$ un
+	 OpenBSD
+	$
+
+ Lorsque le shell fera son expansion, il fera comme pour les variables et
+ remplacera l'alias (argv[0]) par sa valeur reelle s'il s'avere que c'est
+ reellement un alias.
+ Je voulais voir l'history, mais ca n'as encore aucun interet pour l'instant
+
+
+[16:52] <veins>	quelqu'un sait en quoi consiste l'expansion ?
+[16:52] <Jeanb>	non
+[16:52] <Hadoms> non
+[16:52] <T0aD>	non
+[16:52] <veins>	ok
+[16:52] <skink>	nop
+[16:52] <Jeanb>	et si on veut mettre plusierus commandes dans un alias on peut ?
+		on les sépare par un espace ?
+[16:52] <veins>	$ echo $toto
+[16:53] <veins>	le shell va recevoir echo $toto
+[16:53] <veins>	mais ne va pas l'executer tel quel
+[16:53] <veins>	il va effectuer une serie d'operations qui consistent en
+[16:53] <veins>	analyser les quotes
+[16:53] <veins>	voir si une variable doit etre remplacee
+[16:53] <veins>	voir si un alias doit etre remplace
+[16:53] <veins>	etc...
+[16:53] <veins>	apres quoi
+[16:53] <veins>	une fois toutes ces operations effectuees
+[16:53] <veins>	il executera la commande finale
+[16:53] <veins>	c'est clair ou pas ?
+[16:53] <Jeanb>	oui
+[16:54] <veins>	en fait tout a l'heure dans mon exemple pour l'alias
+[16:54] <veins>	le shell n'executait pas 'un'
+[16:54] <veins>	il remplacait 'un' par 'uname'
+[16:54] <Hadoms> ok
+[16:54] <veins>	puis il executait
+[16:54] <veins>	seulement, pour nous autres utilisateurs, c'est totalement transparent
+[16:54] <Hadoms> ok
+[16:55] <veins>	neanmoins, tout les shells ne gerent pas l'expansion de la meme maniere
+[16:55] <veins>	et donc c'est avec le temps que vous comprendrez comment marche votre shell
+[16:55] <veins>	comme vous utilisez tous un shell de type bourne
+[16:55] <veins>	c'est a peu pres pareil pour tous  :)
+[16:55] <Hadoms> ok
+[16:55] <veins>	bon
+[16:55] <veins>	on revient a ce que j'ai dit tout a l'heure
+[16:56] <veins>	quelqu'un sait pourquoi j'ai dit 'hereditaire' ?
+[16:56] <Jeanb>	où ça lol ?
+[16:56] <veins>	en parlant de l'environnement
+[16:56] <veins>	<veins> comme on va le voir tout a l'heure
+[16:56] <veins>	<veins> l'environnement est plus ou moins "hereditaire"  :)
+[16:57] <Jeanb>	non je vois pas
+[16:57] <veins>	apparemment non  :)
+[16:57] <veins>	bon
+[16:57] <veins>	sous Unix
+[16:57] <veins>	on raisonne en matiere de 'processus'
+[16:57] <veins>	chaque commande executee est un processus
+[16:57] <veins>	qui peut creer d'autres processus
+[16:57] <veins>	etc...
+[16:58] <veins>	vous allez comprendre dans un instant
+
+
+ pour simplifier, disons que chaque processus a un proprietaire
+ si vous executez un shell script, vous etes le proprietaire du processus
+ (sauf dans certains cas qu'on ne va pas voir pour l'instant :p)
+ le processus est designe par un nombre que l'on nomme le pid (process ID)
+
+ Nous lancons un shell script, il recoit un PID du systeme d'exploitation
+ (du kernel pour etre precis); le PID n'est pas modifiable.
+ Sur certains systemes (BSD) il est aleatoire, sur d'autres systemes (Linux)
+ il est incremental.
+
+
+[17:01] <veins> vous comprenez jusqu'a maintenant ?
+[17:01] <Mouch0ir> ui
+[17:01] <veins> (vous inquietez pas, j'ai pas fini l'explication :p)
+[17:01] <Hadoms> oui
+[17:02] <veins> ok
+[17:02] <Hadoms> juste un truc, pour voir les pid c ps -aux
+[17:02] <veins> oui
+[17:02] <veins> ps
+[17:02] <veins> la liste des arguments n'est pas la meme sur tout les systemes
+[17:02] <veins> donc consultez la page de man
+[17:02] <Hadoms> ok
+[17:02] <veins> bon
+
+
+ on a donc vu que votre shell est un processus, c'est un programme comme un autre
+ qui n'a pas plus d'importance aux yeux du systeme qu'une commande 'cp' ou 'rm'
+ Ce processus va creer ce que l'on appelle des processus fils à chaque fois qu'il
+ lancera une commande. Le processus fils aura un pid different, et sera "lie" au pere
+
+ Ce que vous pouvez voir, c'est que quand vous executez une commande, si celle ci
+ n'est pas une commande builtin, alors elle aura un pid a elle, et vous aurez donc
+ DEUX processus et non plus un seul
+
+ Pourquoi ai je dit hereditaire tout a l'heure... [ n.d.k` : vas-tu enfin le dire ? ]
+ fonctionnement du shell :
+  il va voir une commande a executer
+  il va se dupliquer
+  il va 'ecraser' une de ses copies par la commande a executer
+  et il va lui transmettre son environnement
+
+ c'est "un peu" comme du clonage
+
+
+[17:07] <Jeanb>	oué un peu près compris
+[17:07] <Hadoms> g compris
+[17:07] <veins>	pour les developpeurs en C
+[17:07] <veins>	la duplication c'est fork()
+[17:07] <veins>	l'execution c'est  execve()
+[17:07] <veins>	et l'environnement c'est le troisieme argument d'execve
+[17:08] <Hadoms> ok
+[17:08] <veins>	on a donc vu que chaque processus a un pid
+[17:08] <veins>	en quoi cela peut il nous servir a votre avis ?
+[17:08] <veins>	une des differences majeurs entre unix et windows qui est
+		place a tout bout de champs  :)
+[17:09] <veins> lol
+[17:09] <Hadoms> bah, ca peut servir à tuer un processus
+[17:09] <Hadoms> sans faire control-alt-suppressionm
+[17:09] <veins>	hadoms: exactement
+[17:09] <veins>	ca nous sert pas forcement a tuer un processus
+[17:09] <veins>	mais du moins a communiquer avec lui
+[17:09] <veins>	a l'aide de signaux
+[17:09] <veins>	le signal KILL en est un
+[17:09] <veins>	mais il en existe d'autres  :)
+[17:09] <Hadoms> ou alors le restarter (pour apache)
+[17:10] <veins>	je ne peux pas donner une liste de signaux car ils changent
+		d'un systeme a un autre
+	[ n.d.k` : tu peux au moins donner les signaux POSIX ]
+[17:10] <veins>	mais certains signaux sont constants
+[17:10] <veins>	parmi eux on compte:
+		1 - SIGHUP  (qui demande au processus de se recharger)
+		2 - SIGINT  (qui demande au processus de s'arreter)
+		9 - SIGKILL (qui tue le processus, pas vraiment proprement)
+[17:11] <veins> de nombreux autres signaux sont identiques sur toutes les plateformes,
+		mais pour l'instant vous allez apprendre a utiliser ceux la  :p
+[17:12] <veins>	vous etes tous sur un shell ?
+[17:12] <skink>	oui
+[17:12] <Hadoms> oui 
+[17:12] <veins> ok
+[17:12] <veins> logguez vous d'abord une fois
+[17:12] <Mouch0ir> c'est koi exactement la difference entre 2 et 9 ?
+[17:12] <veins> Mouchoir, je vais y venir
+[17:12] <Mouch0ir> ok
+[17:12] <veins> logguez vous tous deux fois a votre shell
+[17:12] <veins> que vous ayez deux shells sous les yeux
+[17:12] <Hadoms> ok
+[17:13] <veins>	et dites moi quand vous etes prets
+[17:13] <veins> en attendant je vais expliqer la difference entre 2 et 9
+[17:13] <Mouch0ir> ok
+[17:13] <veins>	et expliquer un autre truc important
+[17:13] <veins>	SIGINT est un signal "gentil"
+[17:13] <jeanb-net> pret
+[17:13] <veins>	il demande au programme de s'arreter
+[17:13] <veins>	mais le programme a le temps de "faire son nettoyage"
+[17:13] <T0aD>	'tu pourrais t arreter steuplait ?'
+[17:13] <veins>	si il a des fichiers a nettoyer
+[17:13] <veins>	etc...
+[17:13] <T0aD>	'oui bien sur' lui repondit le programme
+[17:14] <veins>	SIGKILL lui vient du kernel
+[17:14] <veins>	il tue le processus
+[17:14] <veins>	sans que celui ci ne puisse empecher
+[17:14] <Hadoms> ok.......chui pret
+[17:14] <veins>	du fait qu'un programme puisse reagir a la reception d'un SIGINT
+[17:14] <veins>	ca veut dire que le programme peut de lui meme decider de ne pas mourir
+[17:14] <veins>	un SIGKILL ne lui laisse pas le choix
+[17:15] <veins> un autre truc a voir
+[17:15] <veins> comme on l'a vu avec le shell
+[17:15] <veins> il cree des processus fils avec des pid differents
+[17:15] <veins> seulement
+[17:15] <veins> la mort du pere
+[17:15] <veins> entraine la mort des fils
+[17:15] <veins> (probablement la tristesse  :)
+
+[17:15] <veins>	z'etes tous prets donc ?
+[17:15] <Hadoms> ui
+[17:15] <veins>	sur un de vos shells
+[17:15] <veins>	tappez:  vi
+[17:16] <veins> vous devriez tous avoir un shell avec l'editeur de texte
+[17:16] <jeanb-net> oui
+[17:16] <veins>	et un shell avec bash, ksh ou autre
+[17:16] <Hadoms> oui
+[17:16] <veins>	sur la fenetre ou c'est votre shell
+[17:16] <veins>	on va recuperer le pid de 'vi'
+[17:16] <veins>	et lui 'demander' de s'arreter
+[17:16] <veins>	tappez:
+[17:17] <veins>	ps ax | grep vi
+[17:17] <veins>	le premier champs est le pid
+[17:17] <skink>	ps: warning: /var/run/dev.db: Permission denied
+[17:18] <Hadoms> moi aussi c ame fait ca , mais a chaque ps que je fait
+[17:18] <T0aD>	pas grave ca
+[17:18] <veins> pas grave
+[17:18] <veins>	l'important est que vous voyez un pid
+[17:18] <Hadoms> oui
+[17:18] <T0aD>	ca vient de mon systeme mais ca n a aucune importance,
+		vous voyez tous les process
+[17:18] <T0aD>	je me posais la question 'pkoi ils se connectent tous deux fois ?'
+[17:18] <veins> bien
+[17:19] <veins>	tappez:
+[17:19] <veins>	$ kill -2 PID
+[17:19] <veins>	ou PID est le numero de PID
+[17:19] <veins> vous pouvez voir sur l'autre fenetre vi qui s'est interrompu
+[17:20] <T0aD>	# ps ax | grep vi
+[17:20] <T0aD>	28197  p1  I+	  0:00.02 vi
+[17:20] <T0aD>	8196   p7  I+	  0:00.02 vi
+[17:20] <T0aD>  11555  pa  I+	  0:00.01 vi
+[17:20] <T0aD>	ca dort ca dort.. :)
+[17:20] <T0aD>	toad	 ttyC0    May 11 16:38 
+[17:20] <T0aD>	jeanb	 ttyp1    May 11 19:09   (aperpignan-101-1-2-164.abo.wanad)
+[17:20] <T0aD>	jeanb	 ttyp3    May 11 19:13   (aperpignan-101-1-2-164.abo.wanad)
+[17:20] <T0aD>	skink	 ttyp6    May 11 18:33   (ip-167-203.evhr.net)
+[17:20] <T0aD>	skink	 ttyp7    May 11 19:13   (ip-167-203.evhr.net)
+[17:20] <T0aD>	mouchoir ttyp9    May 11 19:12   (amarseille-102-1-4-48.abo.wanado)
+[17:20] <T0aD>	hls	 ttypa    May 11 19:14   (hse-montreal-ppp3470596.sympatic)
+[17:20] <T0aD>	hls	 ttypb    May 11 19:14   (hse-montreal-ppp3470596.sympatic)
+[17:21] <Mouch0ir> fo faire un killall, ca va les reveiller :)
+[17:21] <Hadoms> il me dit que g pas le droit de faire kill
+[17:22] <Hadoms> ah si la c bon
+[17:22] <T0aD>	Hadoms: tu dois pas regarder le bon process
+[17:22] <veins>	relancez vi
+[17:22] <veins>	et cette fois ci, killez le shell
+[17:22] <veins>	(celui qui fait tourner 'vi'
+[17:22] <jeanb-net> ben il me pas remis sur le shell après avoir fait le kill
+[17:22] <T0aD>	(sans vous tromper, nyark nyark)
+[17:23] <veins>	jean: c'est peut etre putty qui chie
+[17:23] <veins>	appuye sur 'entree'
+[17:23] <veins>	tu devrais avoir ton prompt de shell
+[17:23] <Jeanb>	non
+[17:23] <veins>	?
+[17:23] <Jeanb>	endirait quil recré le process
+[17:23] <veins>	il a laisse 'vi' ouvert ?
+[17:24] <veins>	envoit lui un '-9'
+[17:24] <Jeanb>	ça a mis interrupted en bas et j'appuies sur entrée et ça me remet comme si javais pas fait kill
+[17:24] <Jeanb>	oki
+[17:24] <Jeanb>	c bon
+[17:24] <veins>	ok
+[17:24] <skink>	moi aussi avec -2 il mettais jsute interrupte et avec -9 il retourne au shell
+[17:24] <veins>	donc apres avoir kille le shell qui tourner 'vi'
+[17:25] <veins>	sur l'autre shell vous pouvez voir que le processus du shell a disparu
+[17:25] <Hadoms> moi il ferme le channel
+[17:25] <veins>	celui de 'vi' aussi
+[17:25] <Hadoms> et il me dit d'appuyer pour reconnecter
+[17:25] <Hadoms> quand je kill un des hls
+[17:25] <veins>	hu ?
+[17:26] <veins>	bien au moins ca a fait voir un truc  :)
+[17:26] <veins>	apparemment 'vi' intercepte le -2
+[17:26] <veins>	vous avez pu voir qu'il ne peut pas en revanche intercepter le -9
+[17:26] <T0aD>	client ssh ? une seule adresse:
+		ftp://ftp.openbsd.org/pub/Mirror/Crypto/SSH/SSHWinClient-3.0.0.exe
+[17:27] <veins>	mais que le processus de 'vi' a disparu egalement
+[17:27] <veins>	c'etait pour demontrer le lien entre le "pere" et le "fils"
+[17:27] <Hadoms> ok
+[17:27] <veins>	ils sont vachement potes, ils se partagent le meme environnement, et quand le pere meurt, le fils meurt de desespoir
+[17:28] <veins>	:p
+[17:28] <Hadoms> et fo être le propriétaire du processus pour le tuer ?
+[17:28] <veins>	oui
+[17:28] <veins>	si tu pouvais tuer les processus des autres
+[17:28] <veins>	tu pourrais foutre en l'air un serveur
+[17:28] <veins>	il y a un processus qui s'appelle 'init' de pid 1
+[17:28] <veins>	qui est a la base de tout les processus du systeme
+[17:29] <veins>	si n'importe qui pouvait le tuer, le systeme passerait son temps a rebooter  :)
+[17:29] <Hadoms> ok
+[17:29] <veins>	bon
+[17:29] <veins>	on va arreter la  :)
+[17:29] <Hadoms> et on peut tuer les processus d'un truc si on est dans le groupe du proprio ?
+[17:30] <veins>	si vous avez des questions, c'est le moment  :)
+[17:30] <Jeanb>   1 ??  Is      0:00.02 /sbin/init
+[17:30] <Jeanb> celui là ?
+[17:30] <veins>	hadoms: non, ca depends pas uniquement de ca
+[17:30] <veins>	en fait ca depends des permissions d'execution du fichier egalement
+[17:30] <veins>	mais en regle generale
+[17:30] <veins>	si tu n'est pas proprietaire
+[17:30] <veins>	ou root
+[17:30] <veins>	tu ne peux pas
+[17:31] <Hadoms> ok
+[17:31] <veins> pas d'autres questions ?
+[17:32] <Jeanb> no
+[17:32] <Hadoms> bah je veux dire que l'atelier était vriament bien
+[17:32] <Jeanb> oué moi aussi
+[17:32] <Hadoms> c t le premier auquel chui venu
+[17:32] <veins> merci  :p
+[17:32] <kirtap> Merci pour les deux ateliers php et unix. Je vais essayer de
+		trouver un moment cette semaine pour les travailler. En tout cas,
+		c'est très intéressant. Merci pour la qualité de la prstation.
+[17:32] <Jeanb> je v dès a présent faire la décharge
+[17:32] <Hadoms> euh....pour la décahrge, ya pas moyen par mail
+[17:32] <Hadoms> ?
+[17:33] <Jeanb> non je pense pas
+[17:33] <veins> hadoms: nan
+[17:33] <skink> merci
+[17:33] <Jeanb>	et en + puisque on est mineur fo l'autorisation des parents et
+		photocopie des papier d'identité à eux

@@ -1,0 +1,436 @@
+Atelier PHP #1 - Samedi 6 Avril 2002
+ 'prof': veins [veins@skreel.org]
+
+
+ le premier atelier va etre très théorique.
+ Je vais dans un premier temps expliquer ce qu'est la différence entre les
+ scripts coté serveur et les scripts cotés client. Ca va etre la base de tout
+ développement web; c'est très important à comprendre.
+ on fera réellement du php qu'a la fin de l'atelier aujourd'hui
+ Dans un premier temps, on va voir ce qu'est le PHP.
+
+ A la base, Internet avait ete cree pour diffuser de la doc. Cette doc n'etait
+ pas pour nous, mais pour les militaires, les instituts scolaires et en regle
+ generale les scientifiques. Les docs ne changeaient pas souvent et il n'est
+ pas trop dur d'imaginer pourquoi (mis a part le fait qu'il y avait pas adsl
+ a l'epoque :)
+ Un jour cependant, Internet s'est ouvert au monde et il a fallu trouver des
+ solutions pour permettre un peu plus de dynamisme ('dynamique' est opposé à
+ 'statique', des pages statiques restent toujours les memes).
+ Pour prendre une jolie metaphore, il fallait transformer le dictionnaire de
+ base avec plein de trucs chiants en une joli encyclopedie (a peu de choses,
+ on y est ;)
+
+ Le protocole CGI (Common Gateway Interface) a ete invente, il est encore
+ beaucoup utilise de nos jours, et c'est un des concurrents direct de PHP.
+ Le principe est simple: Avant on demandait à un serveur de nous envoyer une
+ page, avec le CGI on demande non plus une page, mais on demande au serveur
+ d'executer...un programme.
+ Le programme peut etre ecrit en n'importe quel language, il peut faire tout
+ ce que l'on veut (on pourrait faire executer winamp si on le voulait ;). Le
+ but n'est justement pas de faire executer n'importe quel programme, mais de
+ faire executer un programme qui va afficher de la doc.
+ TOUT CA POUR CA ???
+ Et oui, en fait le programme va nous permettre d'afficher de la doc qui est
+ capable de changer, vous allez voir que c'est facile, et tres vite vos
+ connaissances sur le sujet vont beaucoup s'elargir  ;)
+ Voila pour la petite histoire, si vous n'avez pas tout compris ce n'est pas
+ trop important, vous allez comprendre avec les premiers exemples...
+
+ Pour apprendre le developpement web, quelque soit le language, il faut bien
+ comprendre certaines choses. Ne vous inquietez pas, ca va etre un peu lourd
+ mais c'est simple et une fois compris, vous aurez compris quelque chose qui
+ va vous aider toute votre vie d'internaute (même si vous arretez le PHP ;).
+ Je fais une version abrégée de l'explication, c'est trop complexe et il est
+ peu intéressant de tout connaitre maintenant.
+ Quand vous êtes sur internet, il n'y a que deux types de machines:
+ - Les serveurs
+ - Les clients
+ (non ! pas la peine de contredire, je sais que c'est un mensonge mais c'est
+  necessaire pour que les débutants comprennent :p).
+ Un serveur (Skreel par exemple) va attendre qu'un client (vous par exemple)
+ lui demande quelque chose et s'il le peut, il va renvoyer au client ce dont
+ il avait besoin.
+
+ Exemple:
+    > le serveur de skreel tourne,
+    > vous lui demandez une page web,
+    > il vous renvoie la page web.
+ Jusque la, rien de bien complique  :)
+
+ Maintenant la partie chiante ou vous allez devoir reflechir...
+ Il existe deux types de languages pour le web. Ceux que l'on appelle client
+ side (cote client) tels que le JavaScript.
+
+ Comment ca marche ?
+ Et bien, le language est compris par votre navigateur et le serveur ne fait
+ pas le moindre travail sur la page. Il vous la renvoies telle quelle...
+ L'autre type de language se classe dans la categorie server side (cote...
+ serveur ! et oui ;p). La c'est different, le serveur va faire des choses de
+ toutes sortes sur la page avant de l'envoyer au client.
+ Je sais, c'est pas tres clair comme explication, mais c'est un concept tres
+ dur a expliquer alors qu'il est tres simple à comprendre. C'est pour ca que
+ je fournit des exemples, une fois que vous aurez compris ca on va pouvoir
+ commencer à faire du PHP  :p
+
+ Exemple:
+    Dans le cas du javascript, vous faites une page et vous mettez du code
+    dedans. Vous placez la page sur votre serveur et chaques fois que le client
+    va demander votre page, le serveur va la renvoyer sans rien toucher. Le
+    navigateur du client va donc recevoir le code et s'occuper de l'executer.
+    C'est pour cette raison que le javascript va bien passer sur netscape mais
+    pas sur internet explorer ou l'inverse, c'est parceque personne n'a le meme
+    navigateur.
+
+ Dans le cas du php, vous faites une page avec du code dedans. Vous placez la
+ page sur votre serveur et chaques fois que le client va demander la page, le
+ serveur va executer le code et ENSUITE envoyer la page au client. Le client
+ ne verras donc pas le code puisqu'il ne recevra pas la page elle meme mais
+ le resultat de son execution.
+ Le server side possede l'avantage d'etre independant du navigateur, il envoie
+ ce qu'on lui demande d'envoyer, et ce quel que soit le navigateur. La page ne
+ changera pas apres avoir ete envoyee, alors que le javascript permet de
+ faire 'changer' la page apres reception.
+ Si c'est encore confus, ne vous inquietez pas, je vais faire une pause pour
+ ecouter vos questions. C'est tres important de comprendre ce principe, apres
+ vous verrez qu'il est possible avec un peu d'astuce de generer du javascript
+ depuis le php et de faire toutes sortes de trucs rigolos  ;)
+
+ PAUSE !
+
+
+[15:18] <veins>	:)
+[15:18] <veins>	vais vous filer chacun un petit +
+[15:18] <veins>	des que vous le voyez, vous pouvez poser vos questions
+[15:19] <Clad>	pas de question c'est très clair :)
+[15:20] <EHoba>	c est quoi la troisieme categorie ?
+[15:20] <EHoba>	client serveur ?
+[15:20] <veins>	quelle troisieme catégorie ?
+[15:20] <EHoba>	ben tu dis
+[15:20] <EHoba>	"non ! pas la peine de contredire, je sais que c'est un mensonge ..."
+[15:20] <veins>	il y a le peer-to-peer qui est un autre type de réseau
+[15:21] <EHoba>	ok
+[15:21] <veins>	ou chaques clients est un serveur
+[15:21] <veins>	et un client
+[15:21] <EHoba>	ok c est bon
+[15:21] <EHoba>	2 ieme question
+[15:21] <EHoba>	je croyais qu avec le java
+[15:21] <EHoba>	tu avais une machine virtuelle
+[15:21] <veins>	oui
+[15:21] <veins>	elle se trouve coté client
+[15:21] <EHoba>	chargée non ben alors
+[15:22] <EHoba>	pk code differents mais bon ce ne sont pas des questions php
+[15:22] <EHoba>	alors c est bon
+[15:22] <EHoba>	je poserais une autre fois
+[15:23] <veins>	plus de questions ?
+[15:23] <_xo`>	pas de question ;)
+[15:23] <kirtap> Pourras-tu donner des urls de sites qui donnent un complément d'information
+		technique sur cette partie ?
+[15:23] <veins>	kirtap: je n'en connais pas vraiment
+[15:23] <veins>	en général c'est plutot sur des bouquins qu'on trouve ce genre de choses
+[15:23] <veins>	si c'est pas clair hésites pas à demander
+[15:24] <veins>	c'est pas vraiment relatif à un language donc tu trouveras pas grand chose
+		là dessus sur un site de PHP
+[15:24] <kirtap> C'est clair mais je souhaiterai me documenter sur le sujet.
+[15:24] <c_dd>	kirtap> cherche dans google
+[15:24] <k`>	kirtap regarde la FAQ section 'premiers pas'
+[15:25] <k`>	"ou je peux me documenter en PHP ?"
+[15:25] <kirtap> ok merci
+[15:25] <c_dd>	peut-etre sur PHPFRance.com
+[15:25] <c_dd>	et sur php.net
+[15:25] <k`>	php.net est en anglais
+[15:26] <k`>	peut etre que le mr il ne lit pas couramment l'anglais ? :)
+[15:26] <k`>	meme remarque: direction faq c_dd
+
+
+ On continue,
+ maintenant je vais expliquer ce qu'est l'interpreteur PHP
+ Bien, on a vu beaucoup de theorie, on va pouvoir commencer à entrer dans le
+ vif du PHP dans quelques minutes. Pour cela, on va devoir apprendre comment
+ fonctionne le PHP. Vous devez ecrire du code...
+ Le code, c'est un mot qui fait peur mais qui veut simplement dire qu'on va
+ ecrire des petits mots qui vont former un programme. Ce programme peut soit
+ etre compile (c'est a dire transforme en une suite de 0110001 que l'on ne peut
+ humainement pas comprendre) qui pourra etre execute par l'ordinateur (c'est le cas
+ du C par exemple), soit interprete (c'est a dire qu'il va etre lu, ligne par ligne)
+ ce qui est le cas du PHP.
+ Comme il va etre notre grand ami, on va voir comment fonctionne l'interpreteur PHP...
+
+ le code PHP ca ressemble à ca:
+
+	<?
+	   echo "toto";
+	?>
+
+ Comme on peut le voir, ca commence par <? et ca se termine par ?>, le 'echo'
+ est un des petits mots qui forme le language. Vous allez apprendre a l'utiliser
+ des la prochaine pause. Le code php est généralement "incrusté" dans le html
+ on obtient quelque chose comme:
+
+	<html>
+	<head></head>
+	<body>
+	<?
+	   echo "toto";
+	?>
+	</body>
+	</html>
+
+ Dans ce cas, l'interpreteur va lire le fichier caractere par caractere, des
+ qu'il trouveras <? il va commencer a interpreter le code, des qu'il verra ?>
+ il sautera tout jusqu'au prochain <? ou jusqu'a la fin du fichier.
+
+ Une fois que tout le fichier aura ete interpreté, il affichera le resultat
+ qui sera envoye au client. Je vais abréger et on va passer à la partie qui
+ vous interesse, je vais juste clore la section sur l'interpreteur en vous
+ disant que l'interpreteur va etre votre seul interlocuteur avec le serveur.
+ C'est lui qui va vous dire si vous avez fait une faute, a quelle ligne et
+ quelle est la faute. C'est vraiment votre ami et si vous prenez le temps
+ de lire ce qu'il vous dit, vous arriverez à corriger vos fautes en deux ou
+ trois secondes  ;)
+
+ Dans les ateliers vous allez apprendre au fur et a mesure comment comprendre
+ les messages, mais aussi comment faire des scripts que l'interpreteur pourra
+ lire plus rapidement pour que ces derniers s'executent plus rapidement. Vous
+ allez masteriser le PHP  ;)
+
+
+[15:30] <veins>	des questions ?
+[15:30] <bubuche93> euh question : le code php je suppose qu'il est supprimer par
+		l'interpreteur avant d'etre envoye au client?
+[15:31] <veins>	nan il est pas réellement supprimé
+[15:31] <bubuche93> il est transforme
+[15:31] <k`>	interpreté
+[15:31] <veins>	en fait l'interpreteur va remplacer à l'execution
+[15:31] <veins>	mais pas sur le fichier
+[15:31] <bubuche93> :)
+[15:31] <veins>	il va analyser que qui se trouve dans le fichier
+[15:32] <c_dd>	veins> il ne renvoie tout simplement pas le code php ? c ca ?
+[15:32] <veins>	et faire ses "remplacements" avant de transmettre le résultat au client
+[15:32] <veins>	oui c_dd
+[15:32] <k`>	meme en telechargeant la page par "enregistrer sous"
+[15:32] <c_dd>	merci
+[15:34] <veins>	bien on va passer à la suite
+[15:34] <veins>	le début du code théorique
+[15:35] <veins>	On va expliquer ce qu'est une variable et les differents types.
+[15:35] <veins>	On va expliquer les methodes (GET, POST...).
+[15:35] <veins>	Ahhhh !
+
+
+ Treve de blabla, maintenant que vous avez les bases necessaires pour debuter
+ le PHP, on va attaquer l'apprentissage de ce chouette langage.
+ Comme on l'a vu un peu avant, un script php debute par <? et se termine par ?>,
+ c'est ce qu'on appelle la syntaxe du langage. Il y a un grand nombre de regles
+ qui font la syntaxe d'un langage, un peu comme les regles de grammaire pour le
+ francais. Il est egalement possible d'inserer des commentaires, on verra a quoi
+ cela sert plus tard.
+ La structure de base d'un script ca ressemble a ca:
+
+	<?
+	   /*
+	    * ceci et un commentaire
+	    */
+	   echo "ceci est une instruction";
+	?>
+
+ Vous noterez que l'instruction se termine par un point virgule...
+ Le script du dessus va afficher la phrase 'ceci est une instruction'. C'est
+ bien, mais pas trop utile parce ca affiche toujours la même chose. On aurait
+ pu le faire en HTML  :)
+ C'est la qu'on decouvre avec joie les variables...qui varient !
+ Une variable c'est un tiroir dans lequel on mets quelque chose, après on peut
+ ressortir cette chose autant qu'on veut. Un exemple ?
+
+	<?
+	   $toto = "cool"; /* ceci est une variable */
+	   echo $toto;
+	?>
+
+ Ce script va afficher 'cool' (sans les guillemets)
+ la différence, c'est que chaques fois qu'on voudra afficher "cool" il suffira de
+ remplacer par $toto
+ De nouveau, on peut dire que ce n'est pas tres utile dans cet exemple, car le texte
+ ne change pas. Mais en réalité, les variables peuvent provenir de plusieurs sources
+ - d'une url (quand un script est appellé comme ca: script.php?variable=contenu
+	      c'est ce que l'on appelle la methode GET)
+ - d'un cookie
+ - d'une session
+ - ou encore d'un formulaire posté (méthode POST)
+
+ le language PHP nous permets de récupérer très facilement ces variables en nous
+ les mettants à disposition dans des tableaux de variables
+ (un tableau est une grosse variable qui peut en contenir plusieurs)
+ dans l'exemple d'un script appellé comme ca: script.php?variable=contenu
+ on pourrait avoir cela:
+
+	<?
+	   echo $_GET['variable'];
+	?>
+
+ ce qui afficherait 'contenu' à l'écran
+ On verra les autres méthodes dans les prochains ateliers
+ histoire que vous soyez déjà familiers avec la méthode GET
+ toutes les autres sources de variables fonctionnent de la même manière
+ on va refaire une pause pour vos questions  :)
+
+
+[15:42] <c_dd>	veins> une question:
+[15:42] <c_dd>	veins> y a t-il un moyen d'appliquer la méthode POST quand
+		on appelle directement un script et qu'on veut lui passer
+		des variables à l'appel ?
+[15:43] <veins>	oui
+[15:43] <c_dd>	comment ?
+[15:43] <veins>	sauf que le tableau ne s'appelle plus $_GET[] mais $_POST[]
+[15:43] <veins> on a egalement $_COOKIE[], $_SESSION[], $_SERVER[] mais on les
+		verras plus tard
+[15:43] <c_dd>	comment on fait à l'appel ?
+[15:43] <veins>	comment ca ?
+[15:44] <k`>	tu ne peux pas le passer par l'url
+[15:44] <bubuche93> ah dommage
+[15:44] <k`>	il faut un formulaire
+[15:44] <c_dd>	merci k`
+[15:44] <veins>	un formulaire POSTé
+[15:44] <c_dd>	ok
+[15:44] <veins>	par défaut un formulaire va utiliser la méthode GET
+[15:44] <Jeanb>	ce n'est pas une question que je veux dire mais apporter une précision
+[15:44] <veins>	vasy  :)
+[15:45] <Jeanb>	les tableaux comme ça ne marchent qu'avec PHP 4.1.x, sous les autres c'est
+		$HTTP_GET_VARS['mavariable']
+[15:45] <veins>	oui
+[15:46] <veins>	mais je vous conseille fortement d'employer la dernière syntaxe car c'est
+		celle qui sera imposé par php 4.2.0 pour toutes les nouvelles versions
+[15:46] <veins>	elle évite des problèmes de sécurité
+[15:46] <veins>	tout les hébergeurs qui vont ouvrir auront la nouvelle syntaxe car il
+		ne connaitront pas l'ancienne
+[15:47] <veins>	et avant que les anciens hébergeurs ne changent de syntaxe, ce n'est
+		qu'une question de temps
+[15:47] <k`>	c'est surtout que $_GET[] c'est plus court que $HTTP_GET_VARS[]
+[15:47] <Jeanb>	oui c vrai aussi
+[15:47] <Jeanb>	$HTTP_GET_VARS['mavariable'] n'est plus valable si track vars est à 'On' non ?
+[15:47] <veins>	si ca reste valable
+[15:47] <veins>	ils essayent de garder une compatibiltié
+[15:47] <veins>	mais ce n'est pas dit que ca reste le cas à l'avenir
+[15:47] <Jeanb>	oué
+[15:47] <bubuche93> veins y'a des syntaxe differente selon l'hebergeur?
+[15:47] <veins> bubuche, pas réellement de la syntaxe
+[15:48] <veins> mais selon un hébergeur à un autre certaines choses changent
+[15:48] <bubuche93> comment on fais alors pour savoir
+[15:48] <veins> on verra ca plus tard :)
+[15:48] <bubuche93> ah ok
+[15:48] <veins> la on s'éloigne du sujet  ;p
+[15:48] <veins> c'est clair ?
+[15:49] <veins>	bon
+[15:49] <veins>	on passes à la suite
+[15:49] <veins> on va commencer à faire du php là  :)
+[15:50] <veins>	on va voir les premieres instructions du php
+
+
+ Nous avons dejà vu que echo permettait d'afficher une chaine mais comme c'est
+ toujours là même ce n'est pas intéressant
+ Notre premier script va s'appeller:  if.php
+ Il va afficher une phrase uniquement lorsqu'une certaine condition sera vraie
+ c'est la seule manière de rendre un script réellement dynamique
+
+	<?
+	   if ($_GET['afficher'] == "oui")
+	     echo "bonjour !";
+	?>
+
+ quand vous mettez ce script en ligne et que vous vous rendez à l'addresse:
+  http://identifiant.skreel.org/if.php
+ il n'affiche rien.
+ En fait, il n'afficheras rien tant qu'on ne lui diras pas que la variable 'afficher'
+ contient le mot 'oui', ce qui revient dans cet exemple à vous rendre à l'adresse:
+  http://identifiant.skreel.org/if.php?afficher=oui
+
+ C'est bien, on a déjà un script plus dynamique, mais que faire si la variable
+ 'afficher' est vide ?
+ Et bien l'instruction 'if' qui correspond à notre 'si' en francais (si	telle condition
+ est respectée...') à son 'else' (en francais ca donne 'sinon')
+
+	<?
+	   if ($_GET['afficher'] == "oui")
+	     echo "bonjour !";
+	   else
+	     echo "au revoir !";
+	?>
+
+ dans cet exemple, si 'afficher' contient "oui" alors on afficheras 'bonjour' , mais
+ sinon on afficheras 'aurevoir' , et ce quelque soit la valeur de 'afficher' car le
+ 'else' gère tout les autres cas
+ Pour gérer plusieurs cas on dispose de l'instruction 'else if'
+
+	<?
+	   if ($_GET['afficher'] == "oui")
+	     echo "Bonjour !";
+	   else if ($_GET['afficher'] == "non")
+	     echo "Aurevoir !";
+	   else
+	     echo "pas compris !";
+	?>
+
+ Cet exemple lui, afficheras 'bonjour' si afficher contient 'oui', il affichera
+ 'aurevoir' si afficher contient 'non', et dans tout les autres cas il afficheras
+ 'pas compris !'
+
+ on va voir encore deux instructions, apres quoi on fera un pause pour écouter vos
+ questions, et on clotureras ce premier atelier  ;)
+ c'est bien, on a vu comment faire pour qu'un script agisse différement selon certaines
+ conditions mais il y a autre chose qui rends les scripts dynamiques : ce sont les boucles
+
+ une boucle c'est une partie du script qui va se répeter tant qu'une condition ne sera
+ pas remplies
+
+ Exemple:
+  tant que $toto ne vaudra pas 10, alors le script va afficher la valeur de $toto
+
+	<?
+	   $toto = 0;    /* toto contient 0 */
+	   while ($toto < 10)
+	   {
+	     $toto = $toto + 1;
+	     echo $toto;
+	   }
+	?>
+
+ ceci est une boucle 'while', tant que $toto sera inférieur à 10, alors $toto sera égal
+ à sa valeur + 1
+ à chaque tour il vaudra donc 1 de plus et il affichera sa valeur, à l'execution vous
+ verrez donc sur votre page les valeurs de 1 à 10 un autre type de boucle, plus utilisé
+ mais qui fait le même travail, est:
+
+	<?
+	   for ($toto=0 ; $toto<10 ; $toto++)
+	     echo $toto;
+	?>
+
+ vous noterez que ca prends moins de place.
+ En fait le for() est divisé en trois partie, la première donne la valeur de $toto,
+ la seconde donne la condition à avoir pour sortir de la boucle et la troisième donne
+ une instruction à executer à chaques passage dans la boucle.
+ Vous utilisez l'une ou l'autre, c'est question de gouts  :)
+ On va faire une pause, vous pourrez poser vos questions  ;)
+
+
+[16:06] <pollux68_> veins# j'ai qu'une question, <? c un label qui correspond a
+		'?machin=truc' que tu passes dans l'url ?
+[16:06] <veins>	non
+[16:06] <veins>	<? délimite les passages en PHP
+[16:06] <veins>	des passages en HTML
+[16:06] <pollux68_> ?
+[16:06] <veins>	lorsque l'interpreteur passe,
+[16:06] <veins>	il commence son travail sur les <?
+[16:06] <pollux68_> ah
+[16:06] <pollux68_> ok
+[16:06] <veins>	et le termine sur le ?>
+[16:06] <k`>	pourquoi toto ?
+[16:07] <k`>	:)
+[16:07] <veins>	k, toto a une tres longue histoire
+[16:07] <veins>	:)
+[16:09] <veins>	les différents types de variables seront vues la semaine prochaine
+[16:12] <veins>	je vous laisse, je vais faire l'atelier Unix sur #skreel-unix
+[16:12] <veins>	les logs seront dispos sur le site
+[16:12] <veins>	à la semaine prochaine pour le prochain atelier php  :)
+[16:19] <k`>	cours fini, vous pouvez partir ou si vous avez des questions....
+[16:19] <k`>	...gardez les pour la semaine prochaine
+[16:19] <k`>	nyark :)

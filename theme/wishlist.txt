@@ -1,0 +1,40 @@
+Wishlist:
+
+La wishlist est une liste contenant ce dont on a besoin pour améliorer Skreel à
+l'avenir. Ca va du don en argent à du matériel et des livres, si vous faites un
+don de cette liste, merci de nous avertir un peu à l'avance que nous mettions à
+jour la liste.
+
+
+  matériel:
+
+  - On a besoin _DESESPEREMENT_ de barettes de RAM 256Mo en SDRAM 133 minimum
+    si vous avez de la 512 ca serait ideal. C'est pas pour le luxe qu'on veut
+    demande des tailles minimales mais parcequ'elles occuperaient un slot
+    inutilement ou prendraient la poussiere.
+
+  - On a besoin _DESESPEREMENT_ aussi d'une carte mere pour PIII en bon etat
+    avec au moins 3 slots PCI et pouvant supporter plus de 512Mo de RAM en
+    SDRAM 133.
+
+  - On a besoin d'ordinateurs sans écran, sans clavier et sans souris.
+    On n'a pas besoin de haut de gamme, un vieux 586 voir éventuellement un 486
+    feront amplement l'affaire. Il s'agit pour nous de remplacer notre routeur,
+    notre firewall et de travailler sur l'intégration d'IPsec sur le réseau.
+
+  - On a besoin de cartes réseaux de qualité en 100BaseT. Attention, qualité ca
+    ne veut pas dire qu'on attends des 3com. L'important est que la carte soit:
+    a) robuste  (capable de supporter une charge permanente).
+    b) sûre     (on peut partir un week end sans que la carte ne lache).
+    b) efficace (certaines cartes 100baseT bas de gamme gerent mal la pile TCP)
+
+  - On a besoin de cablage RJ-45 blindé en grande quantité (droit et croisé).
+
+  - On a besoin de disques durs de grande capacité en IDE ou EIDE (pas de SCSI)
+
+
+  Des sous...
+
+  - on a _BESOIN_ de sous, envoyez des sioux... *err* des sous ^_^
+
+

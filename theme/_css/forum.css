@@ -1,0 +1,120 @@
+BODY			{ background-color	: #ffffff;
+			  color			: #000000;
+			  font-family		: verdana, arial, helvetica, sans-serif;
+			  font-size		: 9pt;
+			  margin-left		: 0;
+			  margin-top		: 8;
+			  margin-right		: 0;
+			  margin-bottom		: 0;
+			}
+
+FONT			{ font-family		: verdana, arial, helvetica, sans-serif;
+			  font-size		: 9pt;
+			}
+
+CODE FONT		{ font-family		: Courier, monospace; }
+
+SPAN			{ font-family		: verdana, arial, helvetica, sans-serif;
+			  font-size		: 9pt;
+			}
+
+DIV			{ font-family		: verdana, arial, helvetica, sans-serif;
+			  font-size		: 9pt;
+			}
+
+A			{ font-family		: verdana, arial, helvetica, sans-serif;
+			  text-decoration	: none;
+			}
+A:link			{ color			: #8f8fc0;	}
+A:active		{ color			: #ff0000;	}
+A:visited		{ color			: #b0b0e0;	}
+A:hover			{ color			: #a0a0e0;	}
+
+.petit			{ font-size		: 8pt;		}
+.italic			{ font-style		: italic;	}
+.gras			{ font-weight		: bold;		}
+.underline		{ text-decoration	: underline;	}
+.orange			{ color			: #ff9700;	}
+.rouge			{ color			: #ff0000;	}
+
+.titre			{ color			: #335599;
+			  font-weight		: bold;
+			}
+.erreur			{ color			: #ff0000;
+			  font-weight		: bold;
+			}
+
+.invite			{ color			: #000000;	}
+.membre			{ color			: #003090;	}
+.modero			{ color			: #007f00;	}
+.admins			{ color			: #ff2000;	}
+
+
+#warningLink		{ font-family		: verdana, arial, helvetica, sans-serif;
+			  font-size		: 9pt;
+			  font-weight		: bold;
+			  padding-left		: 30;
+			  padding-bottom	: 10;
+			}
+#leftPanel		{ padding-left		:  5;
+			  padding-top		: 10;
+			  padding-right		: 10;
+			  padding-bottom	:  0;
+			}
+#rghtPane		{ padding-left		: 10;
+			  padding-top		: 10;
+			  padding-right		:  5;
+			  padding-bottom	:  0;
+			}
+#encart			{ padding-left		: 10;
+			  padding-top		: 10;
+			  padding-right		: 10;
+			  padding-bottom	: 15;
+			  text-align		: justify;
+			}
+
+.ligne			{ padding-left		:  2;
+			  margin-top		:  0;
+			  margin-right		:  0;
+			  margin-bottom		:  0;
+			}
+.messageUL		{ margin-left		: 10;
+			  margin-top		: 20;
+			  margin-right		:  0;
+			  margin-bottom		:  0;
+			}
+.messageBody		{ padding-left		: 10;
+			  padding-top		:  0;
+			  padding-right		:  0;
+			  padding-bottom	:  0;
+			  text-align		: justify;
+			}
+
+
+
+DIV.topicTitle		{ margin-left		:  5;
+			  margin-top		:  0;
+			  margin-right		:  0;
+			  margin-bottom		:  3;
+			  font-weight		: bold;
+			}
+
+DIV.subContent		{ margin-left		:  5;
+			  margin-top		:  2;
+			  margin-right		:  5;
+			  margin-bottom		:  4;
+			  text-align		: justify;
+			}
+
+DIV.browse		{ margin-left		:  4;
+			  margin-bottom		:  5;
+			  text-align		: justify;
+			  font-size		:  8pt;
+			}
+DIV.browse A:hover	{ background-color	: #d0d0f0;
+			  color			: #fefefe;
+			}
+
+.on			{ background-color: #eeeef6;		}
+.off			{ background-color: #ffffff;		}
+.bgRed			{ background-color: #ffc0c0;		}

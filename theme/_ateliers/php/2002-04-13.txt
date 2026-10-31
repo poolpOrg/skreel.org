@@ -1,0 +1,437 @@
+Atelier PHP #2 - Samedi 13 Avril 2002
+ 'prof': veins [veins@skreel.org]
+
+
+[15:16] <veins> On va donc faire comme la derniere fois,
+		de temps en temps je fais une pause
+[15:16] <veins> vous posez vos questions
+[15:17] <veins> et on continue
+
+
+ Bien, la derniere fois on a vu beaucoup de theorie et quelques instructions
+ permettant de faire des tests (if, if else, if else if else...), de faire des
+ boucles (for, while). Il existe d'autres instructions de tests et d'autres
+ instructions de boucles, on les verras plus tard.
+ Vous vous rappelez ? La derniere fois on avait vu qu'on pouvait recuperer le
+ contenu d'une variable passee dans l'url en utilisant un tableau du nom de
+ $_GET['nom_de_la_variable']. Si vous ne savez plus ce qu'est un tableau ou
+ que vous n'aviez pas compris, c'est pas grave on va faire un petit rappel tout
+ a l'heure.
+ Deja on va voir les differents types de variables, chaque type a ete concu pour
+ contenir differentes choses (pour reprendre la metaphore du tiroir, on a des
+ gros tiroirs pour nos fringues, des petits tiroirs pour nos chaussettes :p).
+ Apres, on verra comment recuperer ces variables parcequ'elles ne sortent pas de
+ nulle part.
+ Le php est un language non type, ca veut dire qu'une variable n'a pas de type
+ defini a l'avance. Elle peut etre cree au cours d'un script et contenir ce que
+ l'on veut, puis changer de contenu plus tard, cela n'a pas d'importance.
+ Dans un premier temps, on ne verra que trois types de variables celles qui
+ vont vous permettre de developper vos premiers scripts a savoir les types:
+
+   int		qui permettent de stocker des nombres entiers (pas de virgules)
+   char		qui permettent de stocker des lettres ou des chiffres
+   string	qui permettent de stocker plusieurs lettres
+
+ quand on place un contenu dans une variable, on dit que l'on fait une
+ assignation. Quand on compare le contenu de deux variables, on dit que l'on
+ fait une comparaison ou encore un test.
+ Vous vous rapellez le script de la derniere fois ?
+
+	<?
+	   $variable = 0;
+	   if ($variable == 0)
+	     echo "bonjour!";
+	?>
+
+ Et bien la premiere ligne '$variable = 0;' est une assignation et
+ la ligne 'if' est une comparaison. Dans ce cas, on a assigne a la variable
+ le chiffre 0. Le type de la variable a ce moment est donc un type 'int'. On
+ pourra faire des calculs avec (additions, soustractions, etc...).
+ Maintenant, on va faire un petit changement:
+
+	<?
+	   $variable = 'a';
+	   if ($variable == 'a')
+	     echo "Bonjour!";
+	?>
+
+ On vient d'assigner une lettre a la variable, son type est donc devenu 'char'.
+ La il y a un petit truc plus ou moins simple a comprendre. Le PHP ne comprends
+ pas le concept de 'lettres', il ne connait que les chiffres. Pour connaitre la
+ lettre il se base sur son code ASCII. Petit rappel rapide, le code ASCII est un
+ code qui associe chaques caracteres a un nombre, ainsi la lettre A vaut 65, la
+ lettre B vaut 66, ..., le chiffre 0 vaut 48, le chiffre 1 vaut 49, etc...
+
+ Vous n'avez pas a connaitre ce code, PHP le fait pour vous. Ce que vous avez
+ a comprendre est que les lettres et les chiffres dans un type 'char' sont
+ toujours manipules comme des nombres ce qui vous permets de faire des calculs
+ aussi (par exemple 'A' + 'B' revient a dire 65 + 66). Il faut aussi comprendre
+ que dans un type char un chiffre n'est pas considere reelement comme un chiffre
+ mais comme une lettre et que par consequent '0' + '1' ce n'est pas la meme chose
+ que 0 + 1 puisque le calcul se fera sur leur code ASCII. Quand vous aurez
+ compris ca, vous aurez grandement avance  :)
+
+ n.d.k` : oubliez les additions de caracteres... c'est stupide
+
+ Enfin, voyons les 'strings' qui ne sont pas des culottes vachement sexy mais un
+ autre type de variable que vous utiliserez probablement plus souvent que les
+ autres  :)
+
+	<?
+	   $variable = "youpi";
+	   if ($variable == "youpi")
+	     echo "Bonjour";
+	?>
+
+ Tiens... on a mis pleins de caracteres a la suite, ce n'est donc pas un 'char'
+ car ce dernier ne peut contenir qu'un caractere. C'est bel et bien une 'string'
+ ou litteralement 'chaine', un type qui est en fait assez particulier. Vous
+ allez comprendre son fonctionnement dans un instant, vous verrez c'est tres
+ simple.
+
+ Il existe un type particulier que nous avons deja vu la derniere fois, il
+ s'agit des tableaux, que nous appellerons dorenavant 'array'. Un tableau est
+ une variable qui contient d'autres variables, pour les extraires on indique
+ leurs positions. Par exemple:
+
+	<?
+	   $array[0] = "toto";
+	   $array[1] = "va";
+	   $array[2] = "au";
+	   $array[3] = "ski";
+	?>
+
+ Nous avons cree un array de strings (un tableau de chaines de caracteres).
+ On pourra ainsi afficher des phrases en indiquant la position (l'index) de
+ la phrase dans le tableau.
+
+ Maintenant, revenons en a notre type 'string' et a notre type 'char'.
+ Si l'on sait qu'un type 'char' ne contient qu'un caractere et qu'un type 'string'
+ contient plusieurs 'char' on en deduit que... string est un array de char !
+
+ voila. C'est pas plus complique que ca, il existe d'autres types de variables
+ mais je ne vous en parlerais pas pour l'instant parceque ce sont des types qui
+ sont beaucoup plus rarement utilises (tout skreel repose sur ces trois types et
+ les arrays, si on a reussit a s'en sortir sans utiliser d'autres types, vous
+ ne devriez pas en avoir besoin pour faire des forums ou des systeme de news :)
+ Plus serieusement, on les verra dans les prochains cours quand vous arriverez
+ deja a bien manipuler ces types.
+
+ C'est bien tout ca, mais les variables on les recuperes ou ?
+ Apres la pause, on verra comment recuperer des variables de formulaires et on
+ va vous expliquer un tas de trucs magiques. Vous allez voir en particulier ce
+ que sont les fonctions et c'est avec ca que vous allez pouvoir VRAIMENT
+ progresser et apprendre a utiliser des choses que vous ne connaissiez pas.
+
+
+[15:24] <veins>	vous pouvez poser vos questions si vous en avez  :)
+[15:24] <SMoG>	heu oui
+[15:24] <SMoG>	sachant que php fait tout seul les conversions de types
+[15:24] <veins>	oui
+[15:24] <SMoG>	a quoi ca sert d'inculquer cette notion ?
+[15:24] <toad>	tres bonne question.. :)
+[15:24] <veins>	ca sert a faire du code propre
+[15:24] <veins>	en fait si tu ne connais pas cette notion
+[15:25] <veins>	ton code va ressembler a php nuke relativement vite  :)
+[15:25] <SMoG>	ah ué ok donc ca c'est un code propre :
+[15:25] <SMoG>	$nombre=1;
+[15:25] <SMoG>	$nombre+=1;
+[15:25] <SMoG>	et ca c un code sale :
+[15:25] <SMoG>	$nombre="1";
+[15:25] <SMoG>	$nombre+=1;
+[15:25] <SMoG>	c ca ?
+[15:25] <veins>	sur cet exemple ca va pas faire grand chose
+[15:25] <veins> mais en fait
+[15:25] <veins> dans le premier cas
+[15:26] <SMoG>	bah question de propreté
+[15:26] <veins>	l'interpreteur va faire le calcul directement
+[15:26] <veins>	dans le second cas
+[15:26] <veins>	l'interpreteur va convertir
+[15:26] <veins>	puis faire le calcul
+[15:26] <veins>	la tu verras pas la difference
+[15:26] <veins>	mais tu force php a faire une tache en plus
+[15:26] <toad>	SMoG: disons que cette notion te servira dans tous les
+		langages en general aussi
+[15:26] <veins>	oui
+[15:26] <SMoG>	ué c clair mais bon
+[15:26] <veins>	c'est une base générale, et aussi tu verras dans la suite de cet atelier
+[15:27] <SMoG>	'fin walla quoi
+[15:27] <veins>	que ca va te servir a comprendre d'autre concepts
+[15:27] <veins>	tel que la manipulation de chaines et les prototypes
+[15:27] <SMoG>	continuez monsieur jvou derangerez plus :)
+[15:27] <veins>	:)
+[15:27] <veins>	pas d'autres questions ?
+[15:27] <SMoG>	pas dotre question
+[15:27] <veins>	ok
+
+
+ On a vu qu'il est possible de recuperer les variables dans les url, c'est bien
+ mais dans certains cas c'est pas tres bien parceque:
+
+  a) si quelqu'un passe derriere vous, il voit ce qu'il se trouve dans l'url
+  b) le nombre de caracteres dans les url est limite (la limite est grande, mais
+    tout ca pour dire que vous ne pouvez pas vous attendre a passer un nombre
+    de caractere infini)
+
+ Cette methode est appellee la methode GET (en francais, 'recoit') parceque le
+ script recoit les donnees en meme temps que le script.
+ La parade c'est la methode POST (en francais, 'poste') parceque le script poste
+ les donnees. Ce n'est pas important que vous compreniez le principe, c'est
+ interne au serveur web et donc d'aucune utilite en developpement.
+
+ La methode POST permet:
+
+  a) de cacher les donnees au cas ou quelqu'un passe derriere vous
+  b) d'envoyer un nombre illimite (en theorie) de donnees.
+
+ Je dis en theorie parceque la memoire sur le serveur est limitee, sur skreel
+ vous ne pouvez pas envoyer plus de 2 Mo en meme temps ce qui fait quand meme
+ plus de un million de caracteres (j'ai pas fait le calcul de tete ;p).
+
+ ==
+ Attention, j'ai dit 'methode' il s'agit d'un terme technique et non pas de ma
+ maniere d'expliquer. POST et GET sont des methodes, ce qui suit ne le sont pas.
+ ==
+
+ Il y a bien entendu d'autres sources de provenance des variables, les cookies,
+ les sessions et l'environnement. Je vais expliquer en deux mots, mais on verra
+ ca plus tard, de toutes facons, des que vous avez compris le fonctionnement
+ pour recuperer une variable d'une source, vous aurez compris comment les
+ recuperer quel que soit la source de provenance.
+
+ On a vu qu'il etait possible de creer des variable depuis un script simplement
+ en faisant une assignation de la sorte:
+
+	<?
+	   $variable = "contenu";
+	?>
+
+ Ces variables sont appelles des variables 'locales' au script car elles sont
+ crees a l'interieur. Vous pouvez les creer, les supprimer (on verra ca dans
+ quelques ateliers) et en modifier le contenu. Quand on recuperes une variable
+ d'une source telle que la methode GET ou POST, on ne peut pas ecrire dedans,
+ elles sont recut "preremplies" et on ne peut qu'en lire le contenu.
+
+ Le script qui suit va recuperer une variable de la methode POST, essayez de
+ bien le comprendre, il va reprendre tout ce que l'on a vu depuis le premier
+ atelier. Quand vous l'aurez compris, vous serez en mesure de commencer a
+ realiser vos premiers scripts tout seuls comme des grands  :)
+
+	<?
+	   if ($_POST['variable'] == "")
+	   {
+	?>
+
+	<form action="script.php" method="post">
+	<br><input type="text" name="variable">
+	<br><input type="submit" value="test">
+	</form>
+
+	<? }
+	   else
+	     echo $_POST['variable'];
+	?>
+
+ Description du script en deux mots, si la $variable n'a pas de contenu, on va
+ afficher un formulaire avec un champ texte. Sinon elle va afficher le contenu
+ de la variable. Le formulaire lui envoie au script le contenu du champ texte
+ dans une variable. Vous noterez qu'on a utilise le tableau $_POST[] de la 
+ meme maniere que le tableau $_GET[] lors du dernier atelier. De plus, on a
+ utilise des accolades dans la premiere partie et pas dans la seconde. Ca merite
+ des explications ca  :)
+
+ Les accolades sont necessaires uniquement lorsque la condition doit executer
+ plusieurs instructions. Dans notre 'if' il y a plusieurs lignes a afficher mais
+ dans notre 'else' il n'y en a qu'une. Voila, si quelque chose n'est pas clair
+ sur ce script, gardez vos questions pour la prochaine pause, c'est tres
+ important que vous compreniez ce script...
+
+ On va faire un petit resume de ce que etes senses savoir au milieu de ce
+ deuxieme atelier au niveau pratique (vous etes quand meme sense connaitre
+ la theorie !).
+ vous savez maintenant ecrire un script simple qui affiche une chaine de
+ caractere (une string). Vous savez faire afficher cette chaine quand certaines
+ conditions sont remplies (par exemple afficher la chaine quand une variable a
+ un certain contenu et afficher une autre chaine dans les autres cas). vous
+ connaissez different types de variables et vous savez recuperer des variables
+ provenant d'autre scripts soit par l'url soit par des formulaires postes.
+ C'est bien deja, mais comment vous allez faire pour faire autre chose que
+ simplement afficher des chaines ?
+
+ On va utiliser des fonctions. Les fonctions ce sont des parties de code qui
+ evitent de reecrire du code tres souvent. Par exemple, il va arriver tres
+ souvent que vous deviez connaitre la taille d'une chaine de caractere, faire
+ un script qui calcul cette taille est simple et tient sur 4 lignes, mais comme
+ c'est quelque chose qui va revenir tres souvent, on va ecrire ce que l'on
+ appelle une fonction.
+ Cette fonction va vous permettre en une seule instruction
+ de faire tout le necessaire pour calculer la taille. PHP fournit un tres grand
+ nombre de fonctions et comme il vous est impossible de toutes les connaitres et
+ de comprendre leur fonctionnement, on va voir comment font les gens pour savoir
+ comment les utiliser la premiere fois.
+
+ Prenons la fonction strlen() qui calcul la taille d'une chaine.
+
+	<?
+	   echo strlen("toto");
+	?>
+
+ ce code va afficher '4' lors de son execution. Mais comment avons nous appris
+ que strlen:
+
+  a) prenait une chaine de caractere comme argument.
+  b) allait nous renvoyer un nombre.
+
+ On utilise ce que l'on appelle un prototype. Le prototype on le trouve sur la
+ documentation, par exemple sur www.php.net on verra des la premiere ligne ceci:
+   int strlen(string);
+
+ On sait ce qu'est un int et on sait ce qu'est une string, on sait donc comment
+ utiliser cette fonction :)
+ Vous verrez a l'avenir que vous serez amenes souvent a ecrire vos propres
+ fonctions que vous pourrez regrouper dans un fichier et reutiliser a volonte
+ dans tout vos scripts.
+
+ Maintenant que vous connaissez l'astuce des magiciens, vous allez pouvoir
+ apprendre tres rapidement de nouvelles fonctions car en regardant la premiere
+ ligne dans la documentation, vous saurez deja comment elles fonctionnent  :)
+
+
+[15:35] <veins>	Si vous avez des questions, c'est le moment !
+[15:35] <SMoG>	pfiou veins si je puis me permettre
+[15:36] <SMoG>	quand t'arete ton bloc
+[15:36] <SMoG>	apres le if
+[15:36] <SMoG>	genre
+[15:36] <SMoG>	if ($a=="a") { ?> ton code html <? }
+[15:36] <SMoG>	t'arrives a bien relire le code ?
+[15:36] <veins>	comment ca ?
+[15:37] <SMoG>	bah tu met une { et direct apres tu fais ?>
+[15:37] <SMoG>	et le html
+[15:37] <veins>	oui
+[15:37] <SMoG>	fin bon c juste une remarque
+[15:37] <SMoG>	ca te fais un code compliqué
+[15:37] <veins>	au contraire
+[15:37] <veins>	ca a deux avantages
+[15:37] <veins>	le premier c'est que tu n'as pas a backslasher les caractères "
+[15:38] <SMoG>	tu peu faire print('');
+[15:38] <veins>	donc tu fais tout de suites moins de fautes
+[15:38] <veins>	et le second
+[15:38] <veins>	c'est que l'interpreteur saute toute la partie
+[15:38] <veins>	si tu fait:
+[15:38] <veins>	if ($a == "a") { ?>toto<? }
+[15:38] <veins>	l'interpreteur ne va pas s'occuper de l'affichage
+[15:38] <veins>	le script s'executera plus rapidement
+[15:38] <SMoG>	ué et si au milieu de tout ca tu dois printer des variables
+[15:39] <SMoG>	fo réouvrir le bloc php
+[15:39] <SMoG>	refermer
+[15:39] <veins>	oui
+[15:39] <veins>	mais ca resteras toujours plus rapide pour l'interpreteur
+[15:39] <veins>	que d'appeller echo ou print
+[15:39] <SMoG> 	t plus lent pour le codeur :)
+[15:39] <veins>	a chaques ligne que tu veux afficher
+[15:39] <veins>	non du tout
+[15:39] <veins>	si tu prends l'habitude des le depart
+[15:39] <veins>	ca te vient naturellement
+[15:39] <SMoG>	moué oké :)
+[15:39] <veins>	c'est de l'optimisation
+[15:40] <veins> des questions ?
+
+ n.d.k`: il n'est pas forcement necessaire de faire un echo ou un print
+  pour afficher le contenu d'une variable; il est possible d'utiliser
+  les tags 'a la ASP' <?= $mavar ?>.
+  Exemple:
+
+	<? if ($a == "a")
+	   {
+	?>
+
+	toto est un test <?= $a ?> la con
+
+	<? } ?>
+
+
+ on va maintenant voir un autre operateur de comparaison et les operateurs arithmetiques
+ On a vu que == permettait de comparer deux valeurs et de voir si elles sont
+ equivalentes. On dispose egalement d'autres operateurs tels que != qui permet
+ de verifier que deux valeurs ne sont pas identiques. Par consequent on peut
+ faire des tests en faisant:
+
+	if ($toto == $tata)
+
+ mais aussi en faisant pour l'inverse:
+
+	if ($toto != $tata)
+
+ On verra plus tard qu'il existe des raccourcis. Maintennt, on va voir les
+ operateurs arithmetiques. Derriere ce nom barbare se cachent vos cours de CP  :)
+
+	$toto = $tata + $titi;  /* addition       */
+	$toto = $tata - $titi;  /* soustraction   */
+	$toto = $tata * $titi;  /* multiplication */
+	$toto = $tata / $titi;  /* division       */
+	$toto = $tata % $titi;  /* modulo, reste de la division */
+
+ Aussi simple que cela, mais faites attention, une division par zero est
+ interdite. Pour ceux qui n'ont jamais programme, le modulo est une operation
+ qui permet de connaitre le reste d'une division. En effet, la division de
+ 3 / 2 ne va pas renvoyer 1.5 mais 1 et le modulo de 3 % 2 va renvoyer le
+ reste de la division. Vous n'aurez probablement pas a les
+ utiliser avant un moment mais au moins vous savez qu'ils existent.
+
+
+[15:44] <veins>	questions ?
+[15:44] <SMoG>	merciiii veins
+[15:44] <SMoG>	putain ca m'enervait jcomprenais rien au modulo
+[15:44] <toad>	:)
+[15:44] <SMoG>	des dizaines de test pour comprendre ce que ca renvoyé
+[15:44] <SMoG>	vraiment merci :)
+[15:44] <toad>	SMoG: la prochaine fois tu chercheras la doc sur le net :)
+[15:45] <Bob_>	lol..
+[15:45] <SMoG>	bah g meme un bouqin
+[15:45] <SMoG>	mais ya écrit "modulo"
+[15:45] <SMoG>	fin walla
+[15:45] <SMoG>	serieu merci :)
+[15:46] <toad>	http://www.php.net/manual/en/language.operators.php
+[15:46] <SMoG>	:P
+[15:46] <veins>	Bon on va terminer cet atelier par deux petits exercices.
+		Le premier est de comprendre un petit script et d'etre en
+		mesure de l'expliquer la prochaine fois.
+[15:46] <veins>	Il reprends plusieurs principes vu durant cet atelier et n'est pas tres
+[15:46] <veins> complique. Le second exercice, c'est VOUS qui realisez un script assez simple
+[15:46] <veins> en respectant l'enonce  ;)
+[15:47] <veins> Je vous préviens d'avance, le premier exo a AUCUNE utilité que
+		d'essayer de voir si vous avez compris ce qu'on a vu  :)
+
+
+ Exo.1, script.php
+
+	<?
+	   if ($_GET['compteur'] == "")
+	   { ?> <a href="script.php?compteur=0">Un lien</a> <? }
+	   else
+	   {
+	     $compteur = $_GET['compteur'] + 1;
+	?>
+	     <br><a href="script.php?compteur=<?=$compteur?>">Un autre lien</a>
+	<? } ?>
+
+
+ Exo.2,
+
+  Le but est simple, il s'agit de realiser un script qui va recevoir une chaine
+  provenant d'un formulaire poste. Lors de l'execution:
+    1) la chaine s'afficheras sur la premiere ligne
+    2) la taille de la chaine s'afficheras sur la seconde ligne
+    3) la chaine s'afficheras caractere par caractere sur les lignes suivantes
+
+
+[15:47] <veins> Voila, a partir du prochain atelier, vous disposez maintenant des bases que
+[15:47] <veins> je voulais vous donner pour commencer un apprentissage plus pousse. On verra
+[15:48] <veins> des la semaine prochaine, plusieurs fonctions qui vont nous permettre de
+[15:48] <veins> realiser des scripts plus complexes et plus interessants. Des scripts que
+[15:48] <veins> vous serez en mesure d'utiliser dans vos sites  ;)
+[15:48] <veins> questieunnes ?
+[15:50] <veins> ok
+[15:50] <veins> dans ce cas petite pause de dix minutes avant l'atelier unix
+[15:50] <veins> a la semaine prochaine  :)
+Session Close: Sat Apr 13 15:52:09 2002

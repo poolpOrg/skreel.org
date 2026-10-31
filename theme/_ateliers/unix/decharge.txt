@@ -1,0 +1,41 @@
+
+
+   Je soussigné, [nom prenom] ,
+ déclare décharger l'association Skreel de toutes responsabilités vis à vis de
+ l'utilisation de mon compte shell. Je prendrai soin de respecter les règles
+ d'usages et de protéger mon compte en ne fournissant ni mon login ni mon mot
+ de passe à une tierce personne. Je serai le seul et unique responsable en cas
+ de préjudice causé à autrui suite à une mauvaise utilisation du shell qui
+ m'est gracieusement prêté.
+
+ Je suis conscient que l'accès à ce service est un privilège et non un droit,
+ par conséquent, ce service peut-être interrompu sans avertissement, selon la
+ volonté de l'association.
+
+ Je m'engage à :
+
+ - ne pas installer de services, d'eggdrops ou de processus en tache de fond.
+
+ - ne pas utiliser mon shell a des fins de piratage MEME INTERNE A LA MACHINE
+  ET A SES UTILISATEURS.
+
+ - ne pas utiliser mon shell dans un cadre autre que celui des ateliers ou du
+  développement et de l'apprentissage.
+
+ - contacter l'administrateur en cas de question ou de doute.
+
+ Je déclare enfin sur l'honneur être majeur et résidant en France, ou dans un
+ pays régit par la loi Francaise.
+
+ La signature de cette décharge implique la lecture et l'acceptation du texte
+ ci-dessus.
+
+ Fait à [lieu] Le [jj/mm/aaaa]
+ Signature 
+
+
+
+La décharge doit etre accompagnée:
+- de l'adresse complète AINSI que d'un numéro de téléphone ou l'on peut
+ vous contacter
+- d'une photocopie de pièce d'identité.

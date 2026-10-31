@@ -1,0 +1,24 @@
+j'ai vu ce genre de 'codage' sur un UBB
+
+defonce.gif			:def:
+
+eek.gif				:eek:
+
+evil.gif			:evil:
+
+grr.gif				:grrr:
+
+lol.gif				:lol:
+
+love.gif			:love:
+
+sad.gif				:(
+
+smile.gif			:)
+
+tongue.gif			:p
+
+wink.gif			;)
+
+wtf.gif (what the f..)		:|
+
