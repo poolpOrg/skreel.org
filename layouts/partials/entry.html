@@ -1,0 +1,33 @@
+{{- /* One news entry, as the Pelican index.html and article.html rendered it:
+   the index shows the excerpt and a link to the full article when the
+   excerpt was cut, the article page shows the whole content. */ -}}
+{{- $p := .page -}}
+{{- $content := partial "widont.html" (string $p.Content) -}}
+{{- $truncated := false -}}
+{{- if .excerpt -}}
+{{- $summary := partial "summary.html" $content -}}
+{{- $content = $summary.html -}}
+{{- $truncated = $summary.truncated -}}
+{{- end -}}
+{{- $author := index $p.Params.authors 0 -}}
+<TR><TD HEIGHT=1 COLSPAN=2 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=1 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    <TD HEIGHT=1 COLSPAN=2 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=100 HSPACE=0 VSPACE=0 SRC="/theme/_images/h335599.png" BORDER=0></TD>
+    </TR>
+<TR><TD HEIGHT=12 WIDTH=10 BACKGROUND="/theme/_images/index_centre01.png"><IMG HEIGHT=1 WIDTH=10 HSPACE=0 VSPACE=0 SRC="/theme/_images/index_centre01.png" BORDER=0></TD>
+    <TD WIDTH=100%><B><FONT CLASS=titre><A HREF="{{ $p.RelPermalink }}">{{ partial "widont.html" (string ($p.Title | markdownify)) | safeHTML }}</A></FONT></B></TD>
+    <TD BGCOLOR=#FF9700 ALIGN=CENTER><FONT CLASS=topic><NOBR>{{ index $p.Params.categories 0 }}</NOBR></FONT></TD>
+    <TD HEIGHT=12 WIDTH=8><IMG HEIGHT=1 WIDTH=8 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>
+<TR><TD HEIGHT=1 COLSPAN=4 BGCOLOR=#335599 VALIGN=TOP><IMG HEIGHT=1 WIDTH=1 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>
+<TR><TD WIDTH=10><IMG HEIGHT=1 WIDTH=10 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    <TD COLSPAN=2><FONT>&nbsp;&nbsp; <A HREF="mailto:{{ $author }}@skreel.org">{{ $author }}</A> - soumis le {{ $p.Date.Format "2006-01-02 15:04:05-07:00" | safeHTML }}
+    <BR><DIV ALIGN=JUSTIFY>
+      {{ $content | safeHTML }}
+    {{ if $truncated }}
+    <BR>
+    <BR><A HREF="{{ $p.RelPermalink }}">[lire l'article entier]</A>
+    {{ end }}
+    <BR>&nbsp;</DIV></FONT></TD>
+    <TD WIDTH=8><IMG HEIGHT=1 WIDTH=8 HSPACE=0 VSPACE=0 SRC="/theme/_images/hFFFFFF.png" BORDER=0></TD>
+    </TR>

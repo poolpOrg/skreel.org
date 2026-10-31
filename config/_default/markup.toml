@@ -1,0 +1,10 @@
+[goldmark]
+[goldmark.extensions]
+  # Pelican did not turn bare URLs into links
+  linkify = false
+[goldmark.extensions.typographer]
+  # SmartyPants, which Pelican used, turns "--" into an em dash
+  enDash = "&mdash;"
+[goldmark.renderer]
+  # the posts carry raw HTML
+  unsafe = true

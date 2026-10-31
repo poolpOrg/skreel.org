@@ -1,0 +1,34 @@
+baseURL = "https://skreel.org"
+title = "skreel.org"
+languageCode = "fr"
+timeZone = "Europe/Paris"
+
+[permalinks]
+  posts = "/posts/:year-:month-:day/:slug"
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  author = "authors"
+
+[pagination]
+  pagerSize = 5
+
+# The feeds keep the paths Pelican published them at.
+[mediaTypes."application/atom+xml"]
+  suffixes = ["xml"]
+
+[outputFormats.RSS]
+  path = "feeds"
+  baseName = "all.rss"
+
+[outputFormats.Atom]
+  mediaType = "application/atom+xml"
+  path = "feeds"
+  baseName = "all.atom"
+
+[outputs]
+  home = ["HTML", "RSS", "Atom"]
+  section = ["HTML"]
+  taxonomy = ["HTML"]
+  term = ["HTML"]

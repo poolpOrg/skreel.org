@@ -1,0 +1,6 @@
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\"?>" | safeHTML }}
+<feed xmlns="http://www.w3.org/2005/Atom"><title>{{ site.Title }}</title><link href="{{ site.Home.Permalink }}" rel="alternate"/><link href="{{ (.OutputFormats.Get "Atom").Permalink }}" rel="self"/><id>{{ site.Home.Permalink }}</id><updated>{{ (index .RegularPagesRecursive 0).Date.Format "2006-01-02T15:04:05-07:00" | safeHTML }}</updated>
+{{- range .RegularPagesRecursive }}
+<entry><title>{{ .Title | htmlUnescape }}</title><link href="{{ .Permalink }}" rel="alternate"/><published>{{ .Date.Format "2006-01-02T15:04:05-07:00" | safeHTML }}</published><updated>{{ .Date.Format "2006-01-02T15:04:05-07:00" | safeHTML }}</updated><author><name>{{ index .Params.authors 0 }}</name></author><id>tag:skreel.org,{{ .Date.Format "2006-01-02" }}:{{ .RelPermalink }}</id><content type="html">{{ partial "widont.html" (string .Content) }}</content><category term="{{ index .Params.categories 0 }}"/></entry>
+{{- end }}
+</feed>

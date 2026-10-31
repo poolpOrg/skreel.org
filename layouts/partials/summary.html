@@ -1,0 +1,52 @@
+{{- /* Pelican's excerpt (truncate_html_words with SUMMARY_MAX_LENGTH = 50):
+   the content is cut right after its 50th word, " …" is appended and the
+   tags still open are closed. Words are runs of letters, digits, "'" and
+   "-"; an entity that resolves to a letter extends the current word, any
+   other entity, tag or text ends it. Returns a dict with the html and
+   whether it was truncated. */ -}}
+{{- $max := 50 -}}
+{{- $singlets := slice "br" "col" "link" "base" "img" "param" "area" "hr" "input" -}}
+{{- $out := slice -}}
+{{- $open := slice -}}
+{{- $words := 0 -}}
+{{- $pending := false -}}
+{{- $truncated := false -}}
+{{- range findRE `<!--[\s\S]*?-->|<[^>]*>|&#?[A-Za-z0-9]+;?|[\pL\pN_][\pL\pN_'-]*|[^<&\pL\pN_]+|[<&]` . -}}
+  {{- $word := false -}}
+  {{- $ends := false -}}
+  {{- if hasPrefix . "<!--" -}}
+  {{- else if hasPrefix . "<" -}}
+    {{- $ends = true -}}
+  {{- else if hasPrefix . "&" -}}
+    {{- $c := htmlUnescape . -}}
+    {{- if and (ne $c .) (findRE `^[\pL\pN_]` $c) }}{{ $word = true }}{{ else }}{{ $ends = true }}{{ end -}}
+  {{- else if findRE `^[\pL\pN_]` . -}}
+    {{- $word = true -}}
+  {{- else -}}
+    {{- $ends = true -}}
+  {{- end -}}
+  {{- if and $ends $pending -}}
+    {{- $words = add $words 1 -}}
+    {{- $pending = false -}}
+    {{- if ge $words $max }}{{ $truncated = true }}{{ break }}{{ end -}}
+  {{- end -}}
+  {{- if $word -}}
+    {{- $pending = true -}}
+  {{- else if and (hasPrefix . "<") (not (hasPrefix . "<!--")) -}}
+    {{- $name := lower (replaceRE `^</?\s*([A-Za-z][A-Za-z0-9]*)[\s\S]*$` "$1" .) -}}
+    {{- if hasPrefix . "</" -}}
+      {{- $i := -1 -}}
+      {{- range $j, $t := $open }}{{ if eq $t $name }}{{ $i = $j }}{{ end }}{{ end -}}
+      {{- if ge $i 0 }}{{ $open = first $i $open }}{{ end -}}
+    {{- else if not (or (in $singlets $name) (hasSuffix . "/>")) -}}
+      {{- $open = $open | append $name -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $out = $out | append . -}}
+{{- end -}}
+{{- $html := delimit $out "" -}}
+{{- if $truncated -}}
+  {{- $html = printf "%s …" $html -}}
+  {{- range collections.Reverse $open }}{{ $html = printf "%s</%s>" $html . }}{{ end -}}
+{{- end -}}
+{{- return dict "html" $html "truncated" $truncated -}}
